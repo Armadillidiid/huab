@@ -7,6 +7,7 @@
     "packages/*"
   ],
   "scripts": {
+    "huab": "bun --filter huab",
     "typecheck": "bun --workspaces typecheck",
     "changeset-version": "changeset version",
     "changeset-publish": "pnpm build && pnpm vitest && changeset publish && changeset tag && git push --tags"
