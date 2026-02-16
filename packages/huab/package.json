@@ -9,11 +9,10 @@
   "files": [
     "dist"
   ],
-  
   "scripts": {
-    "dev": "node --import=tsx src/bin.ts --watch",
-    "build": "echo 'use sea'",
-    "postbuild": "node scripts/inject-constant.js",
+    "dev": "bun run src/bin.ts --watch",
+    "build": "bun run ./scripts/build-binaries.ts",
+    "postbuild": "bun run scripts/inject-constant.ts",
     "prepare": "effect-language-service patch",
     "clean": "rm -rf dist/*",
     "typecheck": "tsc -b tsconfig.json",
