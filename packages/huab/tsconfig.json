@@ -1,46 +1,14 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@tsconfig/bun/tsconfig.json",
   "compilerOptions": {
-    "strict": true,
-    "moduleDetection": "force",
-    "downlevelIteration": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": false,
-    "declaration": true,
-    "skipLibCheck": true,
-    "exactOptionalPropertyTypes": true,
-    "emitDecoratorMetadata": false,
-    "experimentalDecorators": true,
-    "moduleResolution": "NodeNext",
-    "lib": ["ESNext"],
-    "isolatedModules": true,
-    "sourceMap": true,
-    "declarationMap": true,
-    "noImplicitReturns": false,
-    "noUnusedLocals": true,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true,
-    "noEmitOnError": false,
-    "noErrorTruncation": true,
-    "allowJs": false,
-    "checkJs": false,
-    "forceConsistentCasingInFileNames": true,
-    "stripInternal": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "noUncheckedIndexedAccess": true,
-    "strictNullChecks": true,
-    "target": "esnext",
-    "module": "NodeNext",
-    "incremental": true,
-    "removeComments": false,
-    "types": ["node"],
-    "noEmit": true,
-    "plugins": [{ "name": "@effect/language-service" }],
-
-    // Native Node support
-    "allowImportingTsExtensions": true,
-    "rewriteRelativeImportExtensions": true,
-    "erasableSyntaxOnly": true,
-    "verbatimModuleSyntax": true
+    "jsx": "preserve",
+    "jsxImportSource": "@opentui/solid",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": [],
+    "noUncheckedIndexedAccess": false,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }
