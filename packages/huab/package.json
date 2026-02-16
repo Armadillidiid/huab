@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "huab",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "bauh": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  
+  "scripts": {
+    "dev": "node --import=tsx src/bin.ts --watch",
+    "build": "echo 'use sea'",
+    "postbuild": "node scripts/inject-constant.js",
+    "prepare": "effect-language-service patch",
+    "clean": "rm -rf dist/*",
+    "typecheck": "tsc -b tsconfig.json",
+    "test": "vitest run",
+    "format": "echo 'use oxc",
+    "lint": "echo 'use oxc'"
+  },
+  "devDependencies": {
+    "@effect/cli": "^0.72.1",
+    "@effect/language-service": "latest",
+    "@effect/platform": "^0.93.6",
+    "@effect/platform-node": "^0.103.0",
+    "@effect/vitest": "^0.27.0",
+    "@typescript/native-preview": "7.0.0-dev.20260216.1",
+    "effect": "^3.19.9",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
+  }
+}
