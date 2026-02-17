@@ -9,6 +9,7 @@
   "scripts": {
     "huab": "bun --filter huab",
     "huab:cwd": "bun run --cwd packages/huab",
+    "sdk": "bun --filter @huab/sdk",
     "typecheck": "bun --workspaces typecheck",
     "changeset-version": "changeset version",
     "changeset-publish": "pnpm build && pnpm vitest && changeset publish && changeset tag && git push --tags"

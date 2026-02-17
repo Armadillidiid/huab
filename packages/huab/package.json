@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "dev": "bun run src/bin.ts --watch",
-    "gen:openapi": "bun run ./scripts/gen-openapi.ts",
+    "gen:openapi": "bun run --elide-lines=0 ./scripts/gen-openapi.ts",
     "build": "bun run ./scripts/build-binaries.ts",
     "postbuild": "bun run scripts/inject-constant.ts",
     "clean": "rm -rf dist/*",

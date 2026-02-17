@@ -8,7 +8,7 @@ import { createClient } from "@hey-api/openapi-ts";
 const dir = new URL(".", import.meta.url).pathname;
 
 // Generate OpenAPI spec
-await $`bun dev gen:openapi > ${dir}/openapi.json`.cwd(
+await $`bun run gen:openapi > ${dir}/openapi.json`.cwd(
   path.resolve(dir, "../../huab/"),
 );
 
@@ -25,13 +25,13 @@ await createClient({
       name: "@hey-api/typescript",
       exportFromIndex: false,
     },
-    {
-      name: "@hey-api/sdk",
-      instance: "HuabClient",
-      exportFromIndex: false,
-      auth: false,
-      paramsStructure: "flat",
-    },
+    // {
+    //   name: "@hey-api/sdk",
+    //   instance: "HuabClient",
+    //   exportFromIndex: false,
+    //   auth: false,
+    //   paramsStructure: "flat",
+    // },
     {
       name: "@hey-api/client-fetch",
       exportFromIndex: false,

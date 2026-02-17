@@ -2,6 +2,9 @@ import { oc } from "@orpc/contract";
 import { z } from "zod";
 
 export const exampleContract = oc
+  .route({
+    method: "POST",
+  })
   .input(
     z.object({
       name: z.string(),

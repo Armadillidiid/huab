@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@huab/contract",
+  "name": "@huab/sdk",
   "type": "module",
   "scripts": {
     "typecheck": "tsgo --noEmit",
