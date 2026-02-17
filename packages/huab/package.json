@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "dev": "bun run src/bin.ts --watch",
+    "generate:types": "echo 'todo'",
     "build": "bun run ./scripts/build-binaries.ts",
     "postbuild": "bun run scripts/inject-constant.ts",
     "clean": "rm -rf dist/*",
