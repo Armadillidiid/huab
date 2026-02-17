@@ -7,9 +7,9 @@
     "build": "./script/build.ts"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./client": "./src/client.ts",
-    "./server": "./src/server.ts"
+    ".": "./js/src/gen/client/",
+    "./client": "./js/src/gen/client.gen.ts",
+    "./sdk": "./js/src/gen/sdk.gen.ts"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "0.92.4",
