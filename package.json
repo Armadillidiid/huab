@@ -7,6 +7,7 @@
     "packages/*"
   ],
   "scripts": {
+    "dev:cli": "bun run --cwd packages/huab src/bin.ts",
     "huab": "bun --filter huab",
     "huab:cwd": "bun run --cwd packages/huab",
     "sdk": "bun --filter @huab/sdk",

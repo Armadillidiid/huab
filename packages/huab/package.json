@@ -24,6 +24,7 @@
     "@tsconfig/bun": "^1.0.10",
     "@types/bun": "^1.3.9",
     "@types/node": "^25.2.3",
+    "@types/react": "^19.2.14",
     "@types/yargs": "^17.0.35",
     "@typescript/native-preview": "7.0.0-dev.20260217.1",
     "tsx": "^4.21.0",
@@ -31,9 +32,12 @@
     "vitest": "^4.0.18"
   },
   "dependencies": {
+    "@opentui/core": "^0.1.80",
+    "@opentui/react": "^0.1.80",
     "@orpc/contract": "^1.13.5",
     "@orpc/openapi": "^1.13.5",
     "@orpc/zod": "^1.13.5",
+    "react": "^19.2.4",
     "yargs": "^18.0.0",
     "zod": "^4.3.6"
   }
