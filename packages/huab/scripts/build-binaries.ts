@@ -1,67 +1,81 @@
+#!/usr/bin/env bun
+
 import { $ } from "bun";
+import path from "path";
+import { fileURLToPath } from "url";
 import packageJson from "../package.json";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const dir = path.resolve(__dirname, "..");
+
+process.chdir(dir);
 
 const VERSION = packageJson.version;
 const NAME = packageJson.name;
 
-const targets = [
-  "bun-darwin-arm64",
-  "bun-darwin-x64",
-  "bun-linux-x64",
-  "bun-linux-arm64",
-  "bun-windows-x64",
+// Parse command line flags
+const singleFlag = process.argv.includes("--single");
+const skipInstall = process.argv.includes("--skip-install");
+
+const allTargets = [
+  { os: "linux", arch: "arm64" },
+  { os: "linux", arch: "x64" },
+  { os: "darwin", arch: "arm64" },
+  { os: "darwin", arch: "x64" },
+  { os: "windows", arch: "x64" },
 ] as const;
 
-const parseTargets = () => {
-  const raw = process.env.HUAB_TARGETS?.trim();
-  if (!raw) return targets;
-  const requested = raw
-    .split(",")
-    .map((entry) => entry.trim())
-    .filter((entry) => entry.length > 0);
-  const unknown = requested.filter(
-    (entry) => !targets.includes(entry as (typeof targets)[number]),
-  );
-  if (unknown.length) {
-    console.error(`[huab] Unknown build targets: ${unknown.join(", ")}`);
-    process.exit(1);
-  }
-  return targets.filter((target) => requested.includes(target));
+// Filter targets based on flags
+const targets = singleFlag
+  ? allTargets.filter(
+      (item) =>
+        // Map Windows since process.platform returns 'win32'
+        item.os ===
+          (process.platform === "win32" ? "windows" : process.platform) &&
+        item.arch === process.arch,
+    )
+  : allTargets;
+
+const getBunTarget = (item: (typeof allTargets)[number]) => {
+  return `bun-${item.os}-${item.arch}` as const;
 };
 
-const outputNames: Record<(typeof targets)[number], string> = {
-  "bun-darwin-arm64": "huab-darwin-arm64",
-  "bun-darwin-x64": "huab-darwin-x64",
-  "bun-linux-x64": "huab-linux-x64",
-  "bun-linux-arm64": "huab-linux-arm64",
-  "bun-windows-x64": "huab-windows-x64.exe",
+const getOutputName = (item: (typeof allTargets)[number]) => {
+  const name = [NAME, item.os, item.arch].join("-");
+
+  // Add .exe extension for Windows
+  return item.os === "windows" ? `${name}.exe` : name;
 };
 
 async function main() {
-  const buildTargets = parseTargets();
-  
-  // Only install cross-platform dependencies if explicitly building for multiple platforms
-  const shouldInstallCrossPlatform = 
-    process.env.HUAB_INSTALL_CROSS_PLATFORM === "true" ||
-    (buildTargets.length === targets.length && !process.env.HUAB_TARGETS);
-  
-  if (shouldInstallCrossPlatform) {
+  // Install cross-platform dependencies
+  if (!skipInstall) {
     const opentuiCoreVersion = packageJson.dependencies["@opentui/core"];
     console.log("Installing opentui for all platforms...");
-    console.log("(Skip this with HUAB_INSTALL_CROSS_PLATFORM=false or specify HUAB_TARGETS)");
     await $`bun install --os="*" --cpu="*" @opentui/core@${opentuiCoreVersion}`;
     console.log("Done installing opentui for all platforms");
   } else {
-    console.log("Skipping cross-platform dependency installation");
-    console.log("(Use HUAB_INSTALL_CROSS_PLATFORM=true to enable)");
+    console.log("Skipping dependency installation (--skip-install)");
   }
 
-  await Bun.file("dist").exists().catch(() => false);
+  // Clean and create dist directory
+  await $`rm -rf dist`;
   await $`mkdir -p dist`;
 
-  for (const target of buildTargets) {
-    const outfile = `dist/${outputNames[target]}`;
-    console.log(`Building ${target} -> ${outfile} (v${VERSION})`);
+  const binaries: Record<string, string> = {};
+
+  for (const item of targets) {
+    const platformName = [NAME, item.os, item.arch].join("-");
+
+    const bunTarget = getBunTarget(item);
+    const outputName = getOutputName(item);
+
+    console.log(`Building ${platformName} (${bunTarget})`);
+
+    // Create platform-specific directory structure
+    await $`mkdir -p dist/${platformName}/bin`;
+
     const result = await Bun.build({
       entrypoints: ["src/bin.ts"],
       target: "bun",
@@ -70,19 +84,40 @@ async function main() {
         __NAME__: JSON.stringify(NAME),
       },
       compile: {
-        target,
-        outfile,
-        // Disable bunfig.toml autoloading
+        target: bunTarget,
+        outfile: `dist/${platformName}/bin/${outputName}`,
         autoloadBunfig: false,
+        autoloadDotenv: false,
+        autoloadTsconfig: true,
+        autoloadPackageJson: true,
       },
     });
+
     if (!result.success) {
-      console.error(`Build failed for ${target}:`, result.logs);
+      console.error(`Build failed for ${platformName}:`, result.logs);
       process.exit(1);
     }
+
+    // Create platform-specific package.json
+    await Bun.file(`dist/${platformName}/package.json`).write(
+      JSON.stringify(
+        {
+          name: platformName,
+          version: VERSION,
+          os: [item.os],
+          cpu: [item.arch],
+        },
+        null,
+        2,
+      ),
+    );
+
+    binaries[platformName] = VERSION;
   }
 
-  console.log("Done building all targets");
+  console.log(`\n✓ Built ${Object.keys(binaries).length} binaries:`);
+  Object.keys(binaries).forEach((name) => console.log(`  - ${name}`));
+  console.log("\nDone building all targets");
 }
 
 main().catch((err) => {
@@ -90,3 +125,4 @@ main().catch((err) => {
   process.exit(1);
 });
 
+export {};
