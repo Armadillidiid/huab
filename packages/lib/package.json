@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@huab/lib",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "service": "bun run src/daemon.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "echo 'To be worked on'"
+  },
+  "dependencies": {
+    "dbus-next": "^0.10.2"
+  },
+  "devDependencies": {
+    "@tsconfig/bun": "^1.0.10",
+    "@types/bun": "^1.3.9",
+    "typescript": "^5.9.3"
+  }
+}

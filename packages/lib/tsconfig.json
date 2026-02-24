@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@tsconfig/bun/tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "allowJs": true,
+    "types": ["@types/bun"],
+    "noUncheckedIndexedAccess": false,
+    "resolveJsonModule": true,
+
+    // Native Node support
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
