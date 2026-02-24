@@ -32,6 +32,7 @@
     "vitest": "^4.0.18"
   },
   "dependencies": {
+    "@huab/lib": "workspace:*",
     "@opentui/core": "^0.1.80",
     "@opentui/react": "^0.1.80",
     "@orpc/contract": "^1.13.5",
