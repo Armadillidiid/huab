@@ -1,78 +1,96 @@
-import * as dbus from "dbus-next";
+import { spawnSync } from "child_process";
 import type { Package, PackageUpdate } from "./types.ts";
 
-const FLATPAK_SERVICE = "org.freedesktop.Flatpak";
-const FLATPAK_USER_PATH = "/org/freedesktop/Flatpak/User";
-const FLATPAK_IFACE = "org.freedesktop.Flatpak";
+/**
+ * Parse the tab-separated output of:
+ *   flatpak list --app --columns=ref,origin,version,size
+ *
+ * Each line: "<ref>\t<origin>\t<version>\t<size>"
+ * e.g.  "app/org.mozilla.Firefox/x86_64/stable\tflathub\t125.0\t210.5 MB"
+ *
+ * Note: `flatpak list` without --app also returns runtimes (kind=runtime).
+ * We only care about apps here, so we pass --app.
+ */
+function parseFlatpakList(stdout: string): Package[] {
+  return stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [ref = "", origin = "", version = "", sizeStr = ""] =
+        line.split("\t");
+
+      // ref format: "app/<app-id>/<arch>/<branch>" or just "<app-id>/<arch>/<branch>"
+      const parts = ref.split("/");
+      // Handle both "app/com.example.Foo/x86_64/stable" and "com.example.Foo/x86_64/stable"
+      const appId =
+        parts[0] === "app" ? (parts[1] ?? ref) : (parts[0] ?? ref);
+      const name = appId.split(".").at(-1) ?? appId;
+
+      return {
+        id: ref,
+        name,
+        version: version || "unknown",
+        description: "",
+        // Parse size string like "210.5 MB" into bytes (best-effort)
+        installedSize: parseSizeToBytes(sizeStr),
+        status: "installed" as const,
+        backend: "flatpak" as const,
+        origin: origin || undefined,
+      };
+    });
+}
 
 /**
- * Tuple returned by Flatpak's ListInstalledRefs D-Bus method.
- * Signature: a(ssssssia{sv})
- * Fields: [ref, origin, commit, deploy-dir, latest-commit, subpaths, installed-size, metadata]
+ * Parse a human-readable size string like "210.5 MB", "1.2 GB", "512 kB"
+ * into bytes. Returns 0 if unparseable.
  */
-type InstalledRef = [
-  string,                      // 0: ref  e.g. "app/org.mozilla.Firefox/x86_64/stable"
-  string,                      // 1: origin / remote  e.g. "flathub"
-  string,                      // 2: commit hash
-  string,                      // 3: deploy-dir
-  string,                      // 4: latest-commit
-  string[],                    // 5: subpaths
-  number,                      // 6: installed-size in bytes
-  Record<string, unknown>,     // 7: metadata dict
-];
-
-type FlatpakUserProxy = dbus.ClientInterface & {
-  ListInstalledRefs: () => Promise<InstalledRef[]>;
-};
+function parseSizeToBytes(s: string): number {
+  const m = s.match(/^([\d.]+)\s*(B|kB|MB|GB|TB)?$/i);
+  if (!m) return 0;
+  const n = parseFloat(m[1] ?? "0");
+  switch ((m[2] ?? "B").toUpperCase()) {
+    case "KB":
+      return Math.round(n * 1_000);
+    case "MB":
+      return Math.round(n * 1_000_000);
+    case "GB":
+      return Math.round(n * 1_000_000_000);
+    case "TB":
+      return Math.round(n * 1_000_000_000_000);
+    default:
+      return Math.round(n);
+  }
+}
 
 export class FlatpakClient {
-  private bus: dbus.MessageBus;
-
-  constructor() {
-    this.bus = dbus.sessionBus();
-  }
-
   async listInstalled(): Promise<Package[]> {
-    const obj = await this.bus.getProxyObject(FLATPAK_SERVICE, FLATPAK_USER_PATH);
-    const flatpak = obj.getInterface(FLATPAK_IFACE) as unknown as FlatpakUserProxy;
-    const refs = await flatpak.ListInstalledRefs();
-    return refs.map(refToPackage);
+    const result = spawnSync(
+      "flatpak",
+      ["list", "--app", "--columns=ref,origin,version,size"],
+      { encoding: "utf8" },
+    );
+
+    if (result.error) {
+      throw new Error(`Failed to run flatpak: ${result.error.message}`);
+    }
+    if (result.status !== 0) {
+      throw new Error(
+        `flatpak list exited with status ${result.status}: ${result.stderr}`,
+      );
+    }
+
+    return parseFlatpakList(result.stdout);
   }
 
   /**
    * List available Flatpak updates.
-   * Full implementation deferred to a follow-up phase (Flatpak D-Bus update API
-   * requires a separate transaction flow). Returns empty array for now.
+   * Full implementation deferred to a follow-up phase.
    */
   async listUpdates(): Promise<PackageUpdate[]> {
     return [];
   }
 
-  disconnect(): void {
-    this.bus.disconnect();
-  }
-}
-
-/**
- * Convert a raw InstalledRef tuple from the Flatpak D-Bus API into a Package.
- */
-function refToPackage(ref: InstalledRef): Package {
-  const refStr = ref[0]; // "app/org.mozilla.Firefox/x86_64/stable"
-  const parts = refStr.split("/");
-  const appId = parts[1] ?? refStr; // "org.mozilla.Firefox"
-  // Derive a human-readable name from the last component of the reverse-DNS app ID
-  const name = appId.split(".").at(-1) ?? appId; // "Firefox"
-
-  return {
-    id: refStr,
-    name,
-    // Use the commit hash as the version — it's the only version-like field
-    // returned by ListInstalledRefs. A richer version string requires a separate
-    // GetInstalledRef call with AppStream metadata lookup.
-    version: ref[2] ?? "unknown",
-    description: "",
-    installedSize: ref[6],
-    status: "installed",
-    backend: "flatpak",
-  };
+  /** No-op: no persistent connection to close. */
+  disconnect(): void {}
 }
