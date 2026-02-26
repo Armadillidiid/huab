@@ -14,12 +14,12 @@ export class FlatpakBackend implements IPackageBackend {
 
   // ── Required ───────────────────────────────────────────────────────────
 
-  listInstalled(): AnyPackage[] {
+  listInstalled(){
     return [...refsFromInst(this.userInst), ...refsFromInst(this.sysInst)];
   }
 
   listUpdates(): PackageUpdate[] {
-    const installed = this.listInstalled() as FlatpakPackage[];
+    const installed = this.listInstalled();
     const installedMap = new Map(installed.map((p) => [p.name, p]));
     return [
       ...updateRefsFromInst(this.userInst, installedMap),
@@ -40,8 +40,8 @@ export class FlatpakBackend implements IPackageBackend {
       (p.app_id?.toLowerCase().includes(q) ?? false) ||
       (p.desc?.toLowerCase().includes(q) ?? false);
 
-    const installed = this.listInstalled() as FlatpakPackage[];
-    const available = this.listAvailable() as FlatpakPackage[];
+    const installed = this.listInstalled();
+    const available = this.listAvailable();
 
     // Deduplicate: installed wins over remote if same app_id
     const seen = new Set(installed.map((p) => p.app_id));
@@ -57,11 +57,11 @@ export class FlatpakBackend implements IPackageBackend {
    * Checks installed first, then falls back to remote refs.
    */
   getPackage(id: string): AnyPackage | null {
-    const installed = this.listInstalled() as FlatpakPackage[];
+    const installed = this.listInstalled();
     const found = installed.find((p) => p.id === id);
     if (found) return found;
 
-    const available = this.listAvailable() as FlatpakPackage[];
+    const available = this.listAvailable();
     return available.find((p) => p.id === id) ?? null;
   }
 
@@ -69,7 +69,7 @@ export class FlatpakBackend implements IPackageBackend {
    * List all APP refs available from all configured remotes (installed or not).
    * NOTE: This fetches from remotes and may be slow on first call.
    */
-  listAvailable(): AnyPackage[] {
+  listAvailable() {
     const seen = new Set<string>();
     const results: FlatpakPackage[] = [];
 

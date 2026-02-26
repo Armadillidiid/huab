@@ -1,5 +1,16 @@
-import type { PackageBackend, AnyPackage, PackageUpdate } from './types.js';
-import type { IPackageBackend } from './backend.js';
+import type { PackageBackend, AnyPackage, PackageUpdate } from "./types.js";
+import type { IPackageBackend } from "./backend.js";
+import { KNOWN_BACKENDS } from "./constants.js";
+
+/**
+ * Validate and narrow a raw D-Bus string to a known PackageBackend.
+ * Throws if the value is not a recognised backend identifier.
+ */
+export function parseBackend(s: string): PackageBackend {
+  const backends = new Set(KNOWN_BACKENDS);
+  if (backends.has(s as PackageBackend)) return s as PackageBackend;
+  throw new Error(`[Huab] Unknown backend: "${s}"`);
+}
 
 export class BackendRegistry {
   private readonly backends = new Map<PackageBackend, IPackageBackend>();
@@ -27,65 +38,65 @@ export class BackendRegistry {
   }
 
   listAllInstalled(): AnyPackage[] {
-    return Array.from(this.backends.values()).flatMap(b => b.listInstalled());
+    return Array.from(this.backends.values()).flatMap((b) => b.listInstalled());
   }
 
   listAllUpdates(): PackageUpdate[] {
-    return Array.from(this.backends.values()).flatMap(b => b.listUpdates());
+    return Array.from(this.backends.values()).flatMap((b) => b.listUpdates());
   }
 
   // ── Optional methods ───────────────────────────────────────────────────
 
   search(backend: PackageBackend, query: string): AnyPackage[] {
     const b = this.get(backend);
-    if (typeof b.search !== 'function') return [];
+    if (typeof b.search !== "function") return [];
     return b.search(query);
   }
 
   searchAll(query: string): AnyPackage[] {
-    return Array.from(this.backends.values()).flatMap(b =>
-      typeof b.search === 'function' ? b.search(query) : [],
+    return Array.from(this.backends.values()).flatMap((b) =>
+      typeof b.search === "function" ? b.search(query) : [],
     );
   }
 
   getPackage(backend: PackageBackend, id: string): AnyPackage | null {
     const b = this.get(backend);
-    if (typeof b.getPackage !== 'function') return null;
+    if (typeof b.getPackage !== "function") return null;
     return b.getPackage(id);
   }
 
   listAvailable(backend: PackageBackend): AnyPackage[] {
     const b = this.get(backend);
-    if (typeof b.listAvailable !== 'function') return [];
+    if (typeof b.listAvailable !== "function") return [];
     return b.listAvailable();
   }
 
   listAllAvailable(): AnyPackage[] {
-    return Array.from(this.backends.values()).flatMap(b =>
-      typeof b.listAvailable === 'function' ? b.listAvailable() : [],
+    return Array.from(this.backends.values()).flatMap((b) =>
+      typeof b.listAvailable === "function" ? b.listAvailable() : [],
     );
   }
 
   listByCategory(backend: PackageBackend, category: string): AnyPackage[] {
     const b = this.get(backend);
-    if (typeof b.listByCategory !== 'function') return [];
+    if (typeof b.listByCategory !== "function") return [];
     return b.listByCategory(category);
   }
 
   listAllByCategory(category: string): AnyPackage[] {
-    return Array.from(this.backends.values()).flatMap(b =>
-      typeof b.listByCategory === 'function' ? b.listByCategory(category) : [],
+    return Array.from(this.backends.values()).flatMap((b) =>
+      typeof b.listByCategory === "function" ? b.listByCategory(category) : [],
     );
   }
 
   refreshMetadata(backend: PackageBackend): void {
     const b = this.get(backend);
-    if (typeof b.refreshMetadata === 'function') b.refreshMetadata();
+    if (typeof b.refreshMetadata === "function") b.refreshMetadata();
   }
 
   refreshAllMetadata(): void {
     for (const b of Array.from(this.backends.values())) {
-      if (typeof b.refreshMetadata === 'function') b.refreshMetadata();
+      if (typeof b.refreshMetadata === "function") b.refreshMetadata();
     }
   }
 }

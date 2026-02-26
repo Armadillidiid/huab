@@ -1,7 +1,6 @@
 import Gio from "gi://Gio?version=2.0";
-import type { PackageBackend } from "./types.js";
 import { MANAGER_IFACE_XML, type ManagerIface } from "./manager-iface.js";
-import type { BackendRegistry } from "./backend-registry.js";
+import { type BackendRegistry, parseBackend } from "./backend-registry.js";
 
 export class Manager implements ManagerIface {
   readonly dbus: Gio.DBusExportedObject;
@@ -17,12 +16,12 @@ export class Manager implements ManagerIface {
 
   ListInstalled(backend: string): string {
     return JSON.stringify(
-      this.registry.listInstalled(backend as PackageBackend),
+      this.registry.listInstalled(parseBackend(backend)),
     );
   }
 
   ListUpdates(backend: string): string {
-    return JSON.stringify(this.registry.listUpdates(backend as PackageBackend));
+    return JSON.stringify(this.registry.listUpdates(parseBackend(backend)));
   }
 
   ListAllInstalled(): string {
@@ -37,7 +36,7 @@ export class Manager implements ManagerIface {
 
   Search(backend: string, query: string): string {
     return JSON.stringify(
-      this.registry.search(backend as PackageBackend, query),
+      this.registry.search(parseBackend(backend), query),
     );
   }
 
@@ -47,13 +46,13 @@ export class Manager implements ManagerIface {
 
   GetPackage(backend: string, id: string): string {
     return JSON.stringify(
-      this.registry.getPackage(backend as PackageBackend, id),
+      this.registry.getPackage(parseBackend(backend), id),
     );
   }
 
   ListAvailable(backend: string): string {
     return JSON.stringify(
-      this.registry.listAvailable(backend as PackageBackend),
+      this.registry.listAvailable(parseBackend(backend)),
     );
   }
 
@@ -63,7 +62,7 @@ export class Manager implements ManagerIface {
 
   ListByCategory(backend: string, category: string): string {
     return JSON.stringify(
-      this.registry.listByCategory(backend as PackageBackend, category),
+      this.registry.listByCategory(parseBackend(backend), category),
     );
   }
 
@@ -72,7 +71,7 @@ export class Manager implements ManagerIface {
   }
 
   RefreshMetadata(backend: string): void {
-    this.registry.refreshMetadata(backend as PackageBackend);
+    this.registry.refreshMetadata(parseBackend(backend));
   }
 
   RefreshAllMetadata(): void {

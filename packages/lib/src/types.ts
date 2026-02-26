@@ -1,4 +1,6 @@
-export type PackageBackend = "flatpak" | "packagekit" | "alpm" | "aur" | "snap";
+import type { KNOWN_BACKENDS } from "./constants";
+
+export type PackageBackend = typeof KNOWN_BACKENDS[number];
 
 /**
  * Base package interface — fields present on ALL backends.
