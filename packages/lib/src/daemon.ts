@@ -3,13 +3,18 @@ import GLibUnix from 'gi://GLibUnix?version=2.0';
 import Gio from 'gi://Gio?version=2.0';
 import System from 'system';
 import { SERVICE_NAME, OBJECT_PATH } from './constants.js';
-import { FlatpakManager } from './flatpak-manager.js';
+import { BackendRegistry } from './backend-registry.js';
+import { Manager } from './manager.js';
+import { FlatpakBackend } from './flatpak/index.js';
 
 // ---------------------------------------------------------------------------
-// D-Bus name ownership + object export
+// Wire up backends + D-Bus controller
 // ---------------------------------------------------------------------------
 
-const manager = new FlatpakManager();
+const registry = new BackendRegistry();
+registry.register('flatpak', new FlatpakBackend());
+
+const manager = new Manager(registry);
 
 Gio.bus_own_name(
   Gio.BusType.SESSION,

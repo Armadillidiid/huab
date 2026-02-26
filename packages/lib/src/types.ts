@@ -1,6 +1,6 @@
 export type PackageStatus = "installed" | "not_installed" | "update_available";
 
-export type PackageBackend = "flatpak" | "packagekit" | "alpm";
+export type PackageBackend = "flatpak" | "packagekit" | "alpm" | "snap";
 
 export interface Package {
   /** Backend-specific identifier, e.g. Flatpak ref "app/org.mozilla.Firefox/x86_64/stable" */
