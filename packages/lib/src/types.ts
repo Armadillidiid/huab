@@ -37,3 +37,12 @@ export interface CacheInfo {
   totalSize: number;
   fileCount: number;
 }
+
+/**
+ * Convert D-Bus interfaces to async/Promise-based ones.
+ */
+export type Promisify<T> = {
+  [K in keyof T]: T[K] extends (...args: infer A) => infer R
+    ? (...args: A) => Promise<Awaited<R>>
+    : Promise<Awaited<T[K]>>;
+};

@@ -15,4 +15,4 @@ export const server = new H3()
 
 // Trigger list apps
 const res = await server.request("/flatpak/packages");
-console.log("Installed Flatpak apps:", res);
+console.log("Installed Flatpak apps:", await res.json());

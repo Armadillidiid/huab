@@ -1,14 +1,9 @@
 import * as dbus from "dbus-next";
-import type { Package, PackageUpdate } from "./types.ts";
+import type { Package, PackageUpdate, Promisify } from "./types.ts";
+import { SERVICE_NAME, OBJECT_PATH, IFACE_NAME } from "./constants.ts";
+import type { ManagerIface } from "./manager-iface.ts";
 
-const SERVICE_NAME = "org.freedesktop.Huab";
-const OBJECT_PATH  = "/org/freedesktop/Huab/Manager";
-const IFACE_NAME   = "org.freedesktop.Huab.Manager";
-
-type ManagerProxy = dbus.ClientInterface & {
-  ListInstalled: () => Promise<[string]>;
-  ListUpdates:   () => Promise<[string]>;
-};
+type ManagerProxy = dbus.ClientInterface & Promisify<ManagerIface>;
 
 export class HuabClient {
   private bus: dbus.MessageBus;
@@ -24,13 +19,13 @@ export class HuabClient {
 
   async listInstalled(): Promise<Package[]> {
     const manager = await this.proxy();
-    const [json] = await manager.ListInstalled();
+    const json = await manager.ListInstalled();
     return JSON.parse(json) as Package[];
   }
 
   async listUpdates(): Promise<PackageUpdate[]> {
     const manager = await this.proxy();
-    const [json] = await manager.ListUpdates();
+    const json = await manager.ListUpdates();
     return JSON.parse(json) as PackageUpdate[];
   }
 
