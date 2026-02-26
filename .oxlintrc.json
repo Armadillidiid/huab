@@ -1,0 +1,47 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript"],
+  "ignorePatterns": ["**/dbus-examples/**"],
+  "categories": {
+    "correctness": "warn"
+  },
+  "env": {
+    "builtin": true
+  },
+  "rules": {
+    "typescript/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": {
+          "arguments": false,
+          "attributes": false
+        }
+      }
+    ],
+    "typescript/no-confusing-void-expression": [
+      "error",
+      {
+        "ignoreArrowShorthand": true
+      }
+    ],
+    "typescript/no-deprecated": ["warn"],
+    "typescript/no-unnecessary-condition": [
+      "error",
+      {
+        "allowConstantLoopConditions": true
+      }
+    ],
+    "typescript/no-empty-object-type": [
+      "error",
+      {
+        "allowInterfaces": "with-single-extends"
+      }
+    ],
+    "typescript/restrict-template-expressions": [
+      "error",
+      {
+        "allowNumber": true
+      }
+    ]
+  }
+}

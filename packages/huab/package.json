@@ -17,8 +17,9 @@
     "clean": "rm -rf dist/*",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "format": "echo 'use oxc",
-    "lint": "echo 'use oxc'"
+    "lint": "oxlint --type-aware src",
+    "lint:fix": "oxlint --type-aware --fix src",
+    "format": "oxfmt src"
   },
   "devDependencies": {
     "@tsconfig/bun": "^1.0.10",

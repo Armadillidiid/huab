@@ -57,10 +57,7 @@ interface PackageManager {
   getInfo(packageId: string): Promise<Package>;
   getHistory(packageId: string): Promise<{ version: string; date: string }[]>;
   getScreenshots(packageId: string): Promise<string[]>;
-  getSuggestions(options?: {
-    limit?: number;
-    filterInstalled?: boolean;
-  }): Promise<Package[]>;
+  getSuggestions(options?: { limit?: number; filterInstalled?: boolean }): Promise<Package[]>;
   getCategories(): Promise<string[]>;
   getPackagesByCategory(category: string): Promise<Package[]>;
 
@@ -68,10 +65,7 @@ interface PackageManager {
   install(packageId: string): Promise<TransactionResult>;
   remove(packageId: string): Promise<TransactionResult>;
   reinstall(packageId: string): Promise<TransactionResult>;
-  downgrade(
-    packageId: string,
-    targetVersion?: string,
-  ): Promise<TransactionResult>;
+  downgrade(packageId: string, targetVersion?: string): Promise<TransactionResult>;
 
   // Updates
   listUpdates(): Promise<PackageUpdate[]>;

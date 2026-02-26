@@ -44,11 +44,7 @@ function App() {
         />
       </box>
 
-      <text
-        fg={
-          status === "success" ? "green" : status === "error" ? "red" : "#999"
-        }
-      >
+      <text fg={status === "success" ? "green" : status === "error" ? "red" : "#999"}>
         {status.toUpperCase()}
       </text>
     </box>

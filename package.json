@@ -11,6 +11,9 @@
     "huab": "bun --filter huab",
     "huab:cwd": "bun run --cwd packages/huab",
     "sdk": "bun --filter @huab/sdk",
+    "lint": "bun --workspaces lint",
+    "lint:fix": "bun --workspaces lint:fix",
+    "format": "bun --workspaces format",
     "typecheck": "bun --workspaces typecheck",
     "changeset-version": "changeset version",
     "changeset-publish": "pnpm build && pnpm vitest && changeset publish && changeset tag && git push --tags"
@@ -20,6 +23,9 @@
     "@changesets/cli": "^2.29.8",
     "@types/bun": "^1.3.9",
     "@typescript/native-preview": "7.0.0-dev.20260217.1",
+    "oxfmt": "^0.35.0",
+    "oxlint": "^1.50.0",
+    "oxlint-tsgolint": "^0.15.0",
     "typescript": "^5.9.3"
   },
   "engines": {

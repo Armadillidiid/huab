@@ -14,7 +14,10 @@
     "full-example": "bun run src/06-full-example.ts",
     "manager-transactions": "bun run src/07-manager-transactions.ts",
     "sender-filtering": "bun run src/08-libpamac-sender-filtering.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint --type-aware src",
+    "lint:fix": "oxlint --type-aware --fix src",
+    "format": "oxfmt src"
   },
   "devDependencies": {
     "@tsconfig/bun": "^1.0.10",

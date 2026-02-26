@@ -4,7 +4,10 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsgo --noEmit",
-    "build": "./script/build.ts"
+    "build": "./script/build.ts",
+    "lint": "oxlint --type-aware src",
+    "lint:fix": "oxlint --type-aware --fix src",
+    "format": "oxfmt src"
   },
   "exports": {
     ".": "./js/src/gen/client/",
