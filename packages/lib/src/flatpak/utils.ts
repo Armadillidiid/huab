@@ -31,7 +31,6 @@ function refsFromInst(inst: Flatpak.Installation): FlatpakPackage[] {
           installed_size: r.get_installed_size(),
           download_size: 0,
           install_date: null,
-          status: "installed" as const,
           backend: "flatpak" as const,
         };
       });
@@ -76,7 +75,6 @@ function updateRefsFromInst(
 
 /**
  * List all APP refs available from a given remote, returned as uninstalled
- * FlatpakPackage objects (installed_version: null, status: "not_installed").
  */
 function remoteRefsFromInst(
   inst: Flatpak.Installation,
@@ -107,12 +105,14 @@ function remoteRefsFromInst(
           installed_size: 0,
           download_size: 0,
           install_date: null,
-          status: "not_installed" as const,
           backend: "flatpak" as const,
         };
       });
   } catch (e) {
-    logError(e as object, `[Huab] list_remote_refs_sync failed for remote "${remote}"`);
+    logError(
+      e as object,
+      `[Huab] list_remote_refs_sync failed for remote "${remote}"`,
+    );
     return [];
   }
 }
