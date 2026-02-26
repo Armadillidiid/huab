@@ -13,6 +13,8 @@ export class Manager implements ManagerIface {
     this.dbus = Gio.DBusExportedObject.wrapJSObject(MANAGER_IFACE_XML, this);
   }
 
+  // ── Required ─────────────────────────────────────────────────────────────
+
   ListInstalled(backend: string): string {
     return JSON.stringify(
       this.registry.listInstalled(backend as PackageBackend),
@@ -29,5 +31,51 @@ export class Manager implements ManagerIface {
 
   ListAllUpdates(): string {
     return JSON.stringify(this.registry.listAllUpdates());
+  }
+
+  // ── Optional ─────────────────────────────────────────────────────────────
+
+  Search(backend: string, query: string): string {
+    return JSON.stringify(
+      this.registry.search(backend as PackageBackend, query),
+    );
+  }
+
+  SearchAll(query: string): string {
+    return JSON.stringify(this.registry.searchAll(query));
+  }
+
+  GetPackage(backend: string, id: string): string {
+    return JSON.stringify(
+      this.registry.getPackage(backend as PackageBackend, id),
+    );
+  }
+
+  ListAvailable(backend: string): string {
+    return JSON.stringify(
+      this.registry.listAvailable(backend as PackageBackend),
+    );
+  }
+
+  ListAllAvailable(): string {
+    return JSON.stringify(this.registry.listAllAvailable());
+  }
+
+  ListByCategory(backend: string, category: string): string {
+    return JSON.stringify(
+      this.registry.listByCategory(backend as PackageBackend, category),
+    );
+  }
+
+  ListAllByCategory(category: string): string {
+    return JSON.stringify(this.registry.listAllByCategory(category));
+  }
+
+  RefreshMetadata(backend: string): void {
+    this.registry.refreshMetadata(backend as PackageBackend);
+  }
+
+  RefreshAllMetadata(): void {
+    this.registry.refreshAllMetadata();
   }
 }

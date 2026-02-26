@@ -17,6 +17,41 @@ export const MANAGER_IFACE_XML = `
     <method name="ListAllUpdates">
       <arg direction="out" type="s" name="updates"/>
     </method>
+    <method name="Search">
+      <arg direction="in"  type="s" name="backend"/>
+      <arg direction="in"  type="s" name="query"/>
+      <arg direction="out" type="s" name="packages"/>
+    </method>
+    <method name="SearchAll">
+      <arg direction="in"  type="s" name="query"/>
+      <arg direction="out" type="s" name="packages"/>
+    </method>
+    <method name="GetPackage">
+      <arg direction="in"  type="s" name="backend"/>
+      <arg direction="in"  type="s" name="id"/>
+      <arg direction="out" type="s" name="package"/>
+    </method>
+    <method name="ListAvailable">
+      <arg direction="in"  type="s" name="backend"/>
+      <arg direction="out" type="s" name="packages"/>
+    </method>
+    <method name="ListAllAvailable">
+      <arg direction="out" type="s" name="packages"/>
+    </method>
+    <method name="ListByCategory">
+      <arg direction="in"  type="s" name="backend"/>
+      <arg direction="in"  type="s" name="category"/>
+      <arg direction="out" type="s" name="packages"/>
+    </method>
+    <method name="ListAllByCategory">
+      <arg direction="in"  type="s" name="category"/>
+      <arg direction="out" type="s" name="packages"/>
+    </method>
+    <method name="RefreshMetadata">
+      <arg direction="in"  type="s" name="backend"/>
+    </method>
+    <method name="RefreshAllMetadata">
+    </method>
   </interface>
 </node>`;
 
@@ -26,4 +61,13 @@ export interface ManagerIface {
   ListUpdates(backend: string): string;
   ListAllInstalled(): string;
   ListAllUpdates(): string;
+  Search(backend: string, query: string): string;
+  SearchAll(query: string): string;
+  GetPackage(backend: string, id: string): string;
+  ListAvailable(backend: string): string;
+  ListAllAvailable(): string;
+  ListByCategory(backend: string, category: string): string;
+  ListAllByCategory(category: string): string;
+  RefreshMetadata(backend: string): void;
+  RefreshAllMetadata(): void;
 }
