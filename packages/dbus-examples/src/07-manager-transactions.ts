@@ -1,22 +1,22 @@
 #!/usr/bin/env bun
 /**
  * Example 7: Manager and Transactions Pattern
- * 
+ *
  * This example demonstrates the Manager/Transaction pattern commonly used in D-Bus services.
  * This pattern is used by many system services like NetworkManager, UDisks2, PackageKit, etc.
- * 
+ *
  * Pattern Overview:
  * 1. Manager Object - Central service that creates and manages transaction objects
  * 2. Transaction Objects - Temporary objects created for specific operations
  * 3. Each transaction has its own object path and lifecycle
  * 4. Transactions emit signals to report progress
  * 5. Transactions are destroyed after completion
- * 
+ *
  * This example simulates a package manager with:
  * - A Manager that creates installation/removal transactions
  * - Transaction objects that report progress via signals
  * - Proper lifecycle management (create -> execute -> complete -> destroy)
- * 
+ *
  * Real-world examples:
  * - NetworkManager: Creates connection objects
  * - UDisks2: Creates job objects for disk operations
@@ -78,7 +78,7 @@ class TransactionInterface extends DBusInterface {
     interfaceName: string,
     packageName: string,
     operation: OperationType,
-    version?: string
+    version?: string,
   ) {
     super(interfaceName);
     this._packageName = packageName;
@@ -122,19 +122,25 @@ class TransactionInterface extends DBusInterface {
 
   // Methods
   GetDetails(): string {
-    return JSON.stringify({
-      packageName: this._packageName,
-      operation: this._operation,
-      version: this._version,
-      status: this._status,
-      progress: this._progress,
-    }, null, 2);
+    return JSON.stringify(
+      {
+        packageName: this._packageName,
+        operation: this._operation,
+        version: this._version,
+        status: this._status,
+        progress: this._progress,
+      },
+      null,
+      2,
+    );
   }
 
   Cancel(): boolean {
-    if (this._status === TransactionStatus.Completed || 
-        this._status === TransactionStatus.Failed ||
-        this._status === TransactionStatus.Cancelled) {
+    if (
+      this._status === TransactionStatus.Completed ||
+      this._status === TransactionStatus.Failed ||
+      this._status === TransactionStatus.Cancelled
+    ) {
       console.log(`[Transaction] Cannot cancel transaction in ${this._status} state`);
       return false;
     }
@@ -143,7 +149,7 @@ class TransactionInterface extends DBusInterface {
     this.cancelled = true;
     this._status = TransactionStatus.Cancelled;
     this.StatusChanged(this._status);
-    
+
     if (this.progressInterval) {
       clearInterval(this.progressInterval);
       this.progressInterval = undefined;
@@ -178,7 +184,7 @@ class TransactionInterface extends DBusInterface {
       this.ProgressChanged(progress, step);
 
       // Simulate work
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise((resolve) => setTimeout(resolve, 800));
     }
 
     if (this.cancelled) {
@@ -234,46 +240,46 @@ class TransactionInterface extends DBusInterface {
 TransactionInterface.configureMembers({
   signals: {
     ProgressChanged: {
-      signature: "is"
+      signature: "is",
     },
     StatusChanged: {
-      signature: "s"
+      signature: "s",
     },
     Completed: {
-      signature: "bs"
+      signature: "bs",
     },
     Error: {
-      signature: "ss"
-    }
+      signature: "ss",
+    },
   },
   properties: {
     Status: {
       signature: "s",
-      access: dbus.interface.ACCESS_READ
+      access: dbus.interface.ACCESS_READ,
     },
     Progress: {
       signature: "i",
-      access: dbus.interface.ACCESS_READ
+      access: dbus.interface.ACCESS_READ,
     },
     PackageName: {
       signature: "s",
-      access: dbus.interface.ACCESS_READ
+      access: dbus.interface.ACCESS_READ,
     },
     Operation: {
       signature: "s",
-      access: dbus.interface.ACCESS_READ
-    }
+      access: dbus.interface.ACCESS_READ,
+    },
   },
   methods: {
     GetDetails: {
       inSignature: "",
-      outSignature: "s"
+      outSignature: "s",
     },
     Cancel: {
       inSignature: "",
-      outSignature: "b"
-    }
-  }
+      outSignature: "b",
+    },
+  },
 });
 
 // Manager class - creates and manages transactions
@@ -324,7 +330,7 @@ class PackageManagerInterfaceImpl extends DBusInterface {
   private async createTransaction(
     packageName: string,
     operation: OperationType,
-    version?: string
+    version?: string,
   ): Promise<string> {
     // Generate unique transaction path
     const transactionId = ++this.transactionCounter;
@@ -335,7 +341,7 @@ class PackageManagerInterfaceImpl extends DBusInterface {
       "com.example.PackageManager.Transaction",
       packageName,
       operation,
-      version
+      version,
     );
 
     // Export transaction on the bus
@@ -345,18 +351,21 @@ class PackageManagerInterfaceImpl extends DBusInterface {
     console.log(`[Manager] Created transaction: ${transactionPath}`);
 
     // Execute transaction asynchronously
-    transaction.execute().then(() => {
-      // Auto-cleanup after a delay
-      setTimeout(() => {
-        this.destroyTransaction(transactionPath);
-      }, 2000);
-    }).catch((err) => {
-      console.error(`[Manager] Transaction error:`, err);
-      transaction.Error("EXEC_ERROR", String(err));
-      setTimeout(() => {
-        this.destroyTransaction(transactionPath);
-      }, 2000);
-    });
+    transaction
+      .execute()
+      .then(() => {
+        // Auto-cleanup after a delay
+        setTimeout(() => {
+          this.destroyTransaction(transactionPath);
+        }, 2000);
+      })
+      .catch((err) => {
+        console.error(`[Manager] Transaction error:`, err);
+        transaction.Error("EXEC_ERROR", String(err));
+        setTimeout(() => {
+          this.destroyTransaction(transactionPath);
+        }, 2000);
+      });
 
     return transactionPath;
   }
@@ -372,7 +381,7 @@ class PackageManagerInterfaceImpl extends DBusInterface {
   }
 
   cleanup() {
-    this.transactions.forEach(transaction => {
+    this.transactions.forEach((transaction) => {
       transaction.cleanup();
     });
     this.transactions.clear();
@@ -384,25 +393,25 @@ PackageManagerInterfaceImpl.configureMembers({
   methods: {
     InstallPackage: {
       inSignature: "s",
-      outSignature: "o"
+      outSignature: "o",
     },
     RemovePackage: {
       inSignature: "s",
-      outSignature: "o"
+      outSignature: "o",
     },
     UpdatePackage: {
       inSignature: "ss",
-      outSignature: "o"
+      outSignature: "o",
     },
     ListTransactions: {
       inSignature: "",
-      outSignature: "ao"
+      outSignature: "ao",
     },
     CancelTransaction: {
       inSignature: "o",
-      outSignature: "b"
-    }
-  }
+      outSignature: "b",
+    },
+  },
 });
 
 async function startService() {
@@ -435,7 +444,7 @@ async function startClient() {
   const interfaceName = "com.example.PackageManager";
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const obj = await bus.getProxyObject(serviceName, objectPath);
     const manager = obj.getInterface(interfaceName) as unknown as PackageManagerClientInterface;
@@ -450,13 +459,12 @@ async function startClient() {
 }
 
 // Helper to monitor a transaction
-async function monitorTransaction(
-  bus: dbus.MessageBus,
-  transactionPath: string
-): Promise<void> {
+async function monitorTransaction(bus: dbus.MessageBus, transactionPath: string): Promise<void> {
   try {
     const obj = await bus.getProxyObject("com.example.PackageManager", transactionPath);
-    const transaction = obj.getInterface("com.example.PackageManager.Transaction") as unknown as TransactionClientInterface;
+    const transaction = obj.getInterface(
+      "com.example.PackageManager.Transaction",
+    ) as unknown as TransactionClientInterface;
 
     // Listen to progress updates
     transaction.on("ProgressChanged", (progress: number, message: string) => {
@@ -488,7 +496,7 @@ async function demonstrateManagerPattern() {
   const service = await startService();
   const client = await startClient();
 
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   console.log("=== Demo 1: Single Package Installation ===\n");
 
@@ -501,7 +509,7 @@ async function demonstrateManagerPattern() {
   await monitorTransaction(client.bus, installPath);
 
   // Wait for transaction to complete
-  await new Promise(resolve => setTimeout(resolve, 5000));
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 
   console.log("=== Demo 2: Multiple Concurrent Transactions ===\n");
 
@@ -523,7 +531,7 @@ async function demonstrateManagerPattern() {
     monitorTransaction(client.bus, tx3),
   ]);
 
-  await new Promise(resolve => setTimeout(resolve, 6000));
+  await new Promise((resolve) => setTimeout(resolve, 6000));
 
   console.log("=== Demo 3: Transaction Cancellation ===\n");
 
@@ -533,13 +541,13 @@ async function demonstrateManagerPattern() {
   await monitorTransaction(client.bus, cancelPath);
 
   // Wait a bit then cancel
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  await new Promise((resolve) => setTimeout(resolve, 1500));
 
   console.log("[Client] Cancelling transaction...");
   const cancelled = await client.manager.CancelTransaction(cancelPath);
   console.log(`[Client] Cancellation ${cancelled ? "successful" : "failed"}\n`);
 
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   console.log("=== Demo 4: Listing Active Transactions ===\n");
 
@@ -547,7 +555,7 @@ async function demonstrateManagerPattern() {
   const tx4 = await client.manager.RemovePackage("apache2");
   const tx5 = await client.manager.InstallPackage("docker");
 
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   // List all active transactions
   const activeTx = await client.manager.ListTransactions();
@@ -557,7 +565,7 @@ async function demonstrateManagerPattern() {
   });
   console.log();
 
-  await new Promise(resolve => setTimeout(resolve, 6000));
+  await new Promise((resolve) => setTimeout(resolve, 6000));
 
   console.log("=== All demonstrations completed ===\n");
   console.log("Key patterns demonstrated:");

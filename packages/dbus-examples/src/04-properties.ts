@@ -1,17 +1,17 @@
 #!/usr/bin/env bun
 /**
  * Example 4: D-Bus Properties
- * 
+ *
  * This example demonstrates how to work with D-Bus properties.
  * Properties allow services to expose readable/writable values that can be
  * accessed and modified by clients.
- * 
+ *
  * Key concepts:
  * - Defining properties with read/write access using configureMembers
  * - Property change notifications
  * - Getting and setting properties from clients
  * - PropertyChanged signals
- * 
+ *
  * This file contains both the service and client in one example.
  */
 
@@ -97,13 +97,17 @@ class SettingsInterface extends DBusInterface {
 
   // Method: Get all settings as a summary
   GetSummary(): string {
-    return JSON.stringify({
-      volume: this._volume,
-      brightness: this._brightness,
-      theme: this._theme,
-      enabled: this._enabled,
-      version: "1.0.0"
-    }, null, 2);
+    return JSON.stringify(
+      {
+        volume: this._volume,
+        brightness: this._brightness,
+        theme: this._theme,
+        enabled: this._enabled,
+        version: "1.0.0",
+      },
+      null,
+      2,
+    );
   }
 
   // Method: Reset to defaults
@@ -121,35 +125,35 @@ SettingsInterface.configureMembers({
   properties: {
     Volume: {
       signature: "i",
-      access: dbus.interface.ACCESS_READWRITE
+      access: dbus.interface.ACCESS_READWRITE,
     },
     Brightness: {
       signature: "i",
-      access: dbus.interface.ACCESS_READWRITE
+      access: dbus.interface.ACCESS_READWRITE,
     },
     Theme: {
       signature: "s",
-      access: dbus.interface.ACCESS_READWRITE
+      access: dbus.interface.ACCESS_READWRITE,
     },
     Version: {
       signature: "s",
-      access: dbus.interface.ACCESS_READ
+      access: dbus.interface.ACCESS_READ,
     },
     Enabled: {
       signature: "b",
-      access: dbus.interface.ACCESS_READWRITE
-    }
+      access: dbus.interface.ACCESS_READWRITE,
+    },
   },
   methods: {
     GetSummary: {
       inSignature: "",
-      outSignature: "s"
+      outSignature: "s",
     },
     ResetToDefaults: {
       inSignature: "",
-      outSignature: ""
-    }
-  }
+      outSignature: "",
+    },
+  },
 });
 
 async function startService() {
@@ -185,7 +189,7 @@ async function startClient() {
 
   try {
     // Wait a bit for service to be ready
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const obj = await bus.getProxyObject(serviceName, objectPath);
     const settings = obj.getInterface(interfaceName) as unknown as SettingsClientInterface;
@@ -209,54 +213,54 @@ async function demonstrateProperties() {
   const client = await startClient();
 
   // Give client time to connect
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   console.log("=== Reading Properties ===\n");
-  
+
   const volume = await client.settings.Volume;
   console.log(`[Client] Current volume: ${volume}`);
-  
+
   const brightness = await client.settings.Brightness;
   console.log(`[Client] Current brightness: ${brightness}`);
-  
+
   const theme = await client.settings.Theme;
   console.log(`[Client] Current theme: ${theme}`);
-  
+
   const version = await client.settings.Version;
   console.log(`[Client] Application version: ${version} (read-only)`);
-  
+
   const enabled = await client.settings.Enabled;
   console.log(`[Client] Enabled: ${enabled}\n`);
 
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   console.log("=== Writing Properties ===\n");
-  
+
   console.log("[Client] Setting volume to 75...");
   (client.settings as any).Volume = 75;
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
   console.log("[Client] Setting brightness to 60...");
   (client.settings as any).Brightness = 60;
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
   console.log("[Client] Setting theme to 'light'...");
   (client.settings as any).Theme = "light";
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
   console.log("[Client] Setting enabled to false...");
   (client.settings as any).Enabled = false;
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   console.log("\n=== Getting Summary ===\n");
   const summary = await client.settings.GetSummary();
   console.log("[Client] Current settings:");
   console.log(summary);
 
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   console.log("\n=== Testing Error Handling ===\n");
-  
+
   try {
     console.log("[Client] Attempting to set invalid volume (150)...");
     (client.settings as any).Volume = 150;
@@ -268,7 +272,7 @@ async function demonstrateProperties() {
     }
   }
 
-  await new Promise(resolve => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 300));
 
   try {
     console.log("[Client] Attempting to set invalid theme ('rainbow')...");
@@ -281,11 +285,11 @@ async function demonstrateProperties() {
     }
   }
 
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   console.log("\n=== Resetting to Defaults ===\n");
   await client.settings.ResetToDefaults();
-  await new Promise(resolve => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 300));
 
   const resetSummary = await client.settings.GetSummary();
   console.log("[Client] Settings after reset:");

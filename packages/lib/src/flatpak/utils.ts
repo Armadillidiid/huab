@@ -76,10 +76,7 @@ function updateRefsFromInst(
 /**
  * List all APP refs available from a given remote, returned as uninstalled
  */
-function remoteRefsFromInst(
-  inst: Flatpak.Installation,
-  remote: string,
-): FlatpakPackage[] {
+function remoteRefsFromInst(inst: Flatpak.Installation, remote: string): FlatpakPackage[] {
   try {
     return inst
       .list_remote_refs_sync(remote, null)
@@ -109,10 +106,7 @@ function remoteRefsFromInst(
         };
       });
   } catch (e) {
-    logError(
-      e as object,
-      `[Huab] list_remote_refs_sync failed for remote "${remote}"`,
-    );
+    logError(e as object, `[Huab] list_remote_refs_sync failed for remote "${remote}"`);
     return [];
   }
 }

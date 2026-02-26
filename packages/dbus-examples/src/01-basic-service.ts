@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 /**
  * Example 1: Basic D-Bus Service
- * 
+ *
  * This example demonstrates how to create a D-Bus service that exposes methods
  * to other applications on the session bus.
- * 
+ *
  * Key concepts:
  * - Creating a service with a well-known name
  * - Defining an interface with methods using configureMembers
@@ -56,25 +56,25 @@ CalculatorInterface.configureMembers({
   methods: {
     Add: {
       inSignature: "ii",
-      outSignature: "i"
+      outSignature: "i",
     },
     Subtract: {
       inSignature: "ii",
-      outSignature: "i"
+      outSignature: "i",
     },
     Multiply: {
       inSignature: "ii",
-      outSignature: "i"
+      outSignature: "i",
     },
     Divide: {
       inSignature: "ii",
-      outSignature: "d"
+      outSignature: "d",
     },
     Greet: {
       inSignature: "s",
-      outSignature: "s"
-    }
-  }
+      outSignature: "s",
+    },
+  },
 });
 
 async function main() {

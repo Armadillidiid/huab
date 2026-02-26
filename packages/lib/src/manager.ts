@@ -15,9 +15,7 @@ export class Manager implements ManagerIface {
   // ── Required ─────────────────────────────────────────────────────────────
 
   ListInstalled(backend: string): string {
-    return JSON.stringify(
-      this.registry.listInstalled(parseBackend(backend)),
-    );
+    return JSON.stringify(this.registry.listInstalled(parseBackend(backend)));
   }
 
   ListUpdates(backend: string): string {
@@ -35,9 +33,7 @@ export class Manager implements ManagerIface {
   // ── Optional ─────────────────────────────────────────────────────────────
 
   Search(backend: string, query: string): string {
-    return JSON.stringify(
-      this.registry.search(parseBackend(backend), query),
-    );
+    return JSON.stringify(this.registry.search(parseBackend(backend), query));
   }
 
   SearchAll(query: string): string {
@@ -45,15 +41,11 @@ export class Manager implements ManagerIface {
   }
 
   GetPackage(backend: string, id: string): string {
-    return JSON.stringify(
-      this.registry.getPackage(parseBackend(backend), id),
-    );
+    return JSON.stringify(this.registry.getPackage(parseBackend(backend), id));
   }
 
   ListAvailable(backend: string): string {
-    return JSON.stringify(
-      this.registry.listAvailable(parseBackend(backend)),
-    );
+    return JSON.stringify(this.registry.listAvailable(parseBackend(backend)));
   }
 
   ListAllAvailable(): string {
@@ -61,9 +53,7 @@ export class Manager implements ManagerIface {
   }
 
   ListByCategory(backend: string, category: string): string {
-    return JSON.stringify(
-      this.registry.listByCategory(parseBackend(backend), category),
-    );
+    return JSON.stringify(this.registry.listByCategory(parseBackend(backend), category));
   }
 
   ListAllByCategory(category: string): string {

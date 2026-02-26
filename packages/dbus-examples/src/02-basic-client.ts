@@ -1,15 +1,15 @@
 #!/usr/bin/env bun
 /**
  * Example 2: Basic D-Bus Client
- * 
+ *
  * This example demonstrates how to connect to a D-Bus service and call its methods.
- * 
+ *
  * Key concepts:
  * - Connecting to the session bus
  * - Getting a proxy object for a service
  * - Calling methods on the remote object
  * - Error handling for D-Bus calls
- * 
+ *
  * Prerequisites:
  * - The service from 01-basic-service.ts must be running
  */
@@ -38,7 +38,7 @@ async function main() {
   try {
     // Get the proxy object for the remote service
     const obj = await bus.getProxyObject(serviceName, objectPath);
-    
+
     // Get the interface with proper typing
     const calculator = obj.getInterface(interfaceName) as unknown as CalculatorInterface;
 

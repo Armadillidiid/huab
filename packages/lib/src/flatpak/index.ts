@@ -14,7 +14,7 @@ export class FlatpakBackend implements IPackageBackend {
 
   // ── Required ───────────────────────────────────────────────────────────
 
-  listInstalled(){
+  listInstalled() {
     return [...refsFromInst(this.userInst), ...refsFromInst(this.sysInst)];
   }
 
@@ -45,9 +45,7 @@ export class FlatpakBackend implements IPackageBackend {
 
     // Deduplicate: installed wins over remote if same app_id
     const seen = new Set(installed.map((p) => p.app_id));
-    const remoteMatches = available.filter(
-      (p) => !seen.has(p.app_id) && matches(p),
-    );
+    const remoteMatches = available.filter((p) => !seen.has(p.app_id) && matches(p));
 
     return [...installed.filter(matches), ...remoteMatches];
   }

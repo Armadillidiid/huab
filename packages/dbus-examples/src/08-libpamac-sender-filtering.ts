@@ -56,8 +56,8 @@ const DBusInterface = dbus.interface.Interface;
 
 // ─── D-Bus names ─────────────────────────────────────────────────────────────
 const SERVICE_NAME = "org.example.pamac.daemon";
-const OBJECT_PATH  = "/org/example/pamac/daemon";
-const IFACE_NAME   = "org.example.pamac.daemon";
+const OBJECT_PATH = "/org/example/pamac/daemon";
+const IFACE_NAME = "org.example.pamac.daemon";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -69,10 +69,10 @@ type AnyCallback = (...args: any[]) => void;
 /** What the daemon exposes over D-Bus (matches daemon_interface.vala). */
 interface DaemonProxyInterface {
   // Methods – sender is passed explicitly (simulates D-Bus BusName injection)
-  GetSender:         (callerSender: string)                                    => Promise<string>;
-  StartTransRun:     (sender: string, toInstall: string[], toRemove: string[]) => Promise<void>;
-  StartTransRefresh: (sender: string, force: boolean)                          => Promise<void>;
-  TransCancel:       ()                                                        => Promise<void>;
+  GetSender: (callerSender: string) => Promise<string>;
+  StartTransRun: (sender: string, toInstall: string[], toRemove: string[]) => Promise<void>;
+  StartTransRefresh: (sender: string, force: boolean) => Promise<void>;
+  TransCancel: () => Promise<void>;
 
   // Signals: dbus-next calls .on(eventName, callback) for each signal
   on(event: string, cb: AnyCallback): void;
@@ -99,9 +99,11 @@ class PamacDaemon extends DBusInterface {
     resolve: (ok: boolean) => void;
     work: (sender: string) => Promise<boolean>;
   }> = [];
-  private lockRunning = false;   // Mirrors lockfile_mutex in daemon.vala
+  private lockRunning = false; // Mirrors lockfile_mutex in daemon.vala
 
-  constructor() { super(IFACE_NAME); }
+  constructor() {
+    super(IFACE_NAME);
+  }
 
   // ── D-Bus method: returns caller's unique bus name ─────────────────────────
   //
@@ -119,16 +121,29 @@ class PamacDaemon extends DBusInterface {
   EmitAction(sender: string, action: string): [string, string] {
     return [sender, action];
   }
-  EmitDownloadProgress(sender: string, action: string, status: string, progress: number): [string, string, string, number] {
+  EmitDownloadProgress(
+    sender: string,
+    action: string,
+    status: string,
+    progress: number,
+  ): [string, string, string, number] {
     return [sender, action, status, progress];
   }
   EmitError(sender: string, message: string, details: string[]): [string, string, string[]] {
     return [sender, message, details];
   }
-  StartDownloading(sender: string): string { return sender; }
-  StopDownloading(sender: string): string { return sender; }
-  StartWaiting(sender: string): string { return sender; }
-  StopWaiting(sender: string): string { return sender; }
+  StartDownloading(sender: string): string {
+    return sender;
+  }
+  StopDownloading(sender: string): string {
+    return sender;
+  }
+  StartWaiting(sender: string): string {
+    return sender;
+  }
+  StopWaiting(sender: string): string {
+    return sender;
+  }
   TransRunFinished(sender: string, success: boolean): [string, boolean] {
     return [sender, success];
   }
@@ -168,12 +183,11 @@ class PamacDaemon extends DBusInterface {
    * Mirrors daemon.vala's pattern of locking lockfile_mutex before each
    * ALPM call and unlocking in the thread callback afterward.
    */
-  private enqueue(
-    sender: string,
-    work: (sender: string) => Promise<boolean>,
-  ): void {
+  private enqueue(sender: string, work: (sender: string) => Promise<boolean>): void {
     let resolve!: (ok: boolean) => void;
-    new Promise<boolean>((res) => { resolve = res; });
+    new Promise<boolean>((res) => {
+      resolve = res;
+    });
     this.queue.push({ sender, resolve, work });
     this.drainQueue();
   }
@@ -207,10 +221,10 @@ class PamacDaemon extends DBusInterface {
   private async runTransaction(sender: string, packages: string[]): Promise<boolean> {
     const steps = [
       { msg: "Refreshing package databases...", pct: 10 },
-      { msg: `Downloading ${packages.join(", ")}...`,  pct: 40 },
-      { msg: "Checking package integrity...",           pct: 60 },
-      { msg: "Installing files...",                     pct: 80 },
-      { msg: "Running post-install scripts...",         pct: 95 },
+      { msg: `Downloading ${packages.join(", ")}...`, pct: 40 },
+      { msg: "Checking package integrity...", pct: 60 },
+      { msg: "Installing files...", pct: 80 },
+      { msg: "Running post-install scripts...", pct: 95 },
     ];
 
     // Signal: download starting
@@ -245,32 +259,32 @@ class PamacDaemon extends DBusInterface {
 PamacDaemon.configureMembers({
   methods: {
     GetSender: {
-      inSignature:  "s",   // caller passes its own sender for simulation purposes
+      inSignature: "s", // caller passes its own sender for simulation purposes
       outSignature: "s",
     },
     StartTransRun: {
-      inSignature:  "sass", // sender, toInstall[], toRemove[]
+      inSignature: "sass", // sender, toInstall[], toRemove[]
       outSignature: "",
     },
     StartTransRefresh: {
-      inSignature:  "sb",   // sender, force
+      inSignature: "sb", // sender, force
       outSignature: "",
     },
     TransCancel: {
-      inSignature:  "",
+      inSignature: "",
       outSignature: "",
     },
   },
   signals: {
-    EmitAction:           { signature: "ss"    },   // sender, action
-    EmitDownloadProgress: { signature: "sssn"  },   // sender, action, status, progress
-    EmitError:            { signature: "ssas"  },   // sender, message, details[]
-    StartDownloading:     { signature: "s"     },   // sender
-    StopDownloading:      { signature: "s"     },   // sender
-    StartWaiting:         { signature: "s"     },   // sender
-    StopWaiting:          { signature: "s"     },   // sender
-    TransRunFinished:     { signature: "sb"    },   // sender, success
-    TransRefreshFinished: { signature: "sb"    },   // sender, success
+    EmitAction: { signature: "ss" }, // sender, action
+    EmitDownloadProgress: { signature: "sssn" }, // sender, action, status, progress
+    EmitError: { signature: "ssas" }, // sender, message, details[]
+    StartDownloading: { signature: "s" }, // sender
+    StopDownloading: { signature: "s" }, // sender
+    StartWaiting: { signature: "s" }, // sender
+    StopWaiting: { signature: "s" }, // sender
+    TransRunFinished: { signature: "sb" }, // sender, success
+    TransRefreshFinished: { signature: "sb" }, // sender, success
   },
 });
 
@@ -304,13 +318,13 @@ class PamacClient {
   private transRefreshResolve?: (success: boolean) => void;
 
   // User-facing event callbacks (re-emitted after sender filtering)
-  onAction?:              (action: string) => void;
-  onDownloadProgress?:    (action: string, status: string, pct: number) => void;
-  onError?:               (message: string, details: string[]) => void;
-  onDownloadingStarted?:  () => void;
-  onDownloadingStopped?:  () => void;
-  onWaitingStarted?:      () => void;
-  onWaitingStopped?:      () => void;
+  onAction?: (action: string) => void;
+  onDownloadProgress?: (action: string, status: string, pct: number) => void;
+  onError?: (message: string, details: string[]) => void;
+  onDownloadingStarted?: () => void;
+  onDownloadingStopped?: () => void;
+  onWaitingStarted?: () => void;
+  onWaitingStopped?: () => void;
 
   private constructor(bus: dbus.MessageBus) {
     this.bus = bus;
@@ -336,14 +350,14 @@ class PamacClient {
 
     // ── Wire all signals ─────────────────────────────────────────────────
     // Mirrors connecting_dbus_signals() in transaction_interface_daemon.vala
-    client.daemon.on("EmitAction",           client.onEmitAction.bind(client));
+    client.daemon.on("EmitAction", client.onEmitAction.bind(client));
     client.daemon.on("EmitDownloadProgress", client.onEmitDownloadProgress.bind(client));
-    client.daemon.on("EmitError",            client.onEmitError.bind(client));
-    client.daemon.on("StartDownloading",     client.onStartDownloading.bind(client));
-    client.daemon.on("StopDownloading",      client.onStopDownloading.bind(client));
-    client.daemon.on("StartWaiting",         client.onStartWaiting.bind(client));
-    client.daemon.on("StopWaiting",          client.onStopWaiting.bind(client));
-    client.daemon.on("TransRunFinished",     client.onTransRunFinished.bind(client));
+    client.daemon.on("EmitError", client.onEmitError.bind(client));
+    client.daemon.on("StartDownloading", client.onStartDownloading.bind(client));
+    client.daemon.on("StopDownloading", client.onStopDownloading.bind(client));
+    client.daemon.on("StartWaiting", client.onStartWaiting.bind(client));
+    client.daemon.on("StopWaiting", client.onStopWaiting.bind(client));
+    client.daemon.on("TransRunFinished", client.onTransRunFinished.bind(client));
     client.daemon.on("TransRefreshFinished", client.onTransRefreshFinished.bind(client));
 
     return client;
@@ -362,8 +376,7 @@ class PamacClient {
     return new Promise((resolve) => {
       this.transRunResolve = resolve;
       // Fire-and-forget: daemon returns immediately
-      this.daemon.StartTransRun(this.sender, toInstall, toRemove)
-        .catch(() => resolve(false));
+      this.daemon.StartTransRun(this.sender, toInstall, toRemove).catch(() => resolve(false));
     });
   }
 
@@ -371,8 +384,7 @@ class PamacClient {
   transRefresh(force = false): Promise<boolean> {
     return new Promise((resolve) => {
       this.transRefreshResolve = resolve;
-      this.daemon.StartTransRefresh(this.sender, force)
-        .catch(() => resolve(false));
+      this.daemon.StartTransRefresh(this.sender, force).catch(() => resolve(false));
     });
   }
 
@@ -388,11 +400,16 @@ class PamacClient {
   //   }
 
   private onEmitAction(sender: string, action: string): void {
-    if (sender !== this.sender) return;   // ← sender filter
+    if (sender !== this.sender) return; // ← sender filter
     this.onAction?.(action);
   }
 
-  private onEmitDownloadProgress(sender: string, action: string, status: string, pct: number): void {
+  private onEmitDownloadProgress(
+    sender: string,
+    action: string,
+    status: string,
+    pct: number,
+  ): void {
     if (sender !== this.sender) return;
     this.onDownloadProgress?.(action, status, pct);
   }
@@ -449,7 +466,7 @@ class PamacClient {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function label(name: string): (msg: string) => void {
@@ -486,10 +503,10 @@ async function main(): Promise<void> {
   const clientA = await PamacClient.connect(":1.42");
   const logA = label(":1.42 (Alice)");
 
-  clientA.onAction              = (a)       => logA(`Action: ${a}`);
-  clientA.onDownloadProgress    = (_, s, p) => logA(`Download: ${s} ${p}%`);
-  clientA.onDownloadingStarted  = ()        => logA("Downloading started");
-  clientA.onDownloadingStopped  = ()        => logA("Downloading stopped");
+  clientA.onAction = (a) => logA(`Action: ${a}`);
+  clientA.onDownloadProgress = (_, s, p) => logA(`Download: ${s} ${p}%`);
+  clientA.onDownloadingStarted = () => logA("Downloading started");
+  clientA.onDownloadingStopped = () => logA("Downloading stopped");
 
   const ok1 = await clientA.transRun(["firefox"], []);
   logA(`transRun result: ${ok1 ? "success" : "failed"}\n`);
@@ -511,10 +528,10 @@ async function main(): Promise<void> {
   const logB = label(":1.43 (Bob  )");
   const logC = label(":1.44 (Carol)");
 
-  clientB.onAction           = (a)       => logB(`Action: ${a}`);
+  clientB.onAction = (a) => logB(`Action: ${a}`);
   clientB.onDownloadProgress = (_, s, p) => logB(`Download: ${s} ${p}%`);
 
-  clientC.onAction           = (a)       => logC(`Action: ${a}`);
+  clientC.onAction = (a) => logC(`Action: ${a}`);
   clientC.onDownloadProgress = (_, s, p) => logC(`Download: ${s} ${p}%`);
 
   // Fire both requests without awaiting – they run concurrently on the client

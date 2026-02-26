@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * D-Bus Examples Index
- * 
+ *
  * Interactive menu to explore all D-Bus examples
  */
 

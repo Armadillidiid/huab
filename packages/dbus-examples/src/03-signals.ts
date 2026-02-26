@@ -1,16 +1,16 @@
 #!/usr/bin/env bun
 /**
  * Example 3: D-Bus Signals
- * 
+ *
  * This example demonstrates how to emit and listen to D-Bus signals.
  * Signals are used for broadcasting events from a service to any interested clients.
- * 
+ *
  * Key concepts:
  * - Defining signals in an interface using configureMembers
  * - Emitting signals from a service
  * - Listening to signals from clients
  * - Signal handlers and cleanup
- * 
+ *
  * This file contains both the service and client in one example.
  * Run it to see signals in action.
  */
@@ -41,17 +41,17 @@ class NotificationInterface extends DBusInterface {
   // Method: Send a notification (this will emit a signal)
   SendNotification(title: string, message: string): boolean {
     console.log(`[Service] Sending notification: "${title}" - "${message}"`);
-    
+
     // Emit the signal to all listeners
     this.NotificationSent(title, message);
-    
+
     return true;
   }
 
   // Method: Change status (this will emit a signal)
   SetStatus(status: string): void {
     console.log(`[Service] Status changed to: ${status}`);
-    
+
     // Emit the signal
     this.StatusChanged(status);
   }
@@ -59,14 +59,14 @@ class NotificationInterface extends DBusInterface {
   // Method: Simulate a background event that emits signals
   StartBackgroundTask(): void {
     console.log("[Service] Starting background task...");
-    
+
     // Emit periodic status updates
     let count = 0;
     const interval = setInterval(() => {
       count++;
       const status = `Processing... ${count * 20}%`;
       this.StatusChanged(status);
-      
+
       if (count >= 5) {
         clearInterval(interval);
         this.StatusChanged("Completed!");
@@ -81,25 +81,25 @@ NotificationInterface.configureMembers({
   methods: {
     SendNotification: {
       inSignature: "ss",
-      outSignature: "b"
+      outSignature: "b",
     },
     SetStatus: {
       inSignature: "s",
-      outSignature: ""
+      outSignature: "",
     },
     StartBackgroundTask: {
       inSignature: "",
-      outSignature: ""
-    }
+      outSignature: "",
+    },
   },
   signals: {
     NotificationSent: {
-      signature: "ss"
+      signature: "ss",
     },
     StatusChanged: {
-      signature: "s"
-    }
-  }
+      signature: "s",
+    },
+  },
 });
 
 async function startService() {
@@ -133,7 +133,7 @@ async function startClient() {
 
   try {
     // Wait a bit for service to be ready
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const obj = await bus.getProxyObject(serviceName, objectPath);
     const notif = obj.getInterface(interfaceName) as unknown as NotificationClientInterface;
@@ -171,27 +171,27 @@ async function demonstrateSignals() {
   const client = await startClient();
 
   // Give client time to set up listeners
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   console.log("=== Demonstration 1: Manual notification ===\n");
   await client.notif.SendNotification("Hello", "This is a test notification");
 
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   console.log("\n=== Demonstration 2: Status changes ===\n");
   await client.notif.SetStatus("Idle");
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   await client.notif.SetStatus("Working");
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   await client.notif.SetStatus("Done");
 
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   console.log("\n=== Demonstration 3: Background task with periodic signals ===\n");
   await client.notif.StartBackgroundTask();
 
   // Wait for background task to complete
-  await new Promise(resolve => setTimeout(resolve, 7000));
+  await new Promise((resolve) => setTimeout(resolve, 7000));
 
   console.log("\n=== All demonstrations completed ===\n");
 

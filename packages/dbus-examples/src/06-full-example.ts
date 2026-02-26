@@ -1,13 +1,13 @@
 #!/usr/bin/env bun
 /**
  * Example 6: Full Application Example
- * 
+ *
  * This example demonstrates a complete D-Bus application combining all concepts:
  * - Methods
  * - Properties
  * - Signals
  * - Error handling
- * 
+ *
  * Simulates a media player service that:
  * - Exposes playback controls (play, pause, stop, next, previous)
  * - Has properties (status, volume, current track)
@@ -134,7 +134,7 @@ class MediaPlayerInterface extends DBusInterface {
     this.playbackInterval = setInterval(() => {
       this._position += 1;
       const track = this.getTrack(this._currentTrackIndex);
-      
+
       if (this._position >= track.duration) {
         // Auto advance to next track
         this.Next();
@@ -183,7 +183,7 @@ class MediaPlayerInterface extends DBusInterface {
 
   Next(): boolean {
     const wasPlaying = this._status === PlaybackStatus.Playing;
-    
+
     if (this.playbackInterval) {
       clearInterval(this.playbackInterval);
       this.playbackInterval = undefined;
@@ -206,14 +206,13 @@ class MediaPlayerInterface extends DBusInterface {
 
   Previous(): boolean {
     const wasPlaying = this._status === PlaybackStatus.Playing;
-    
+
     if (this.playbackInterval) {
       clearInterval(this.playbackInterval);
       this.playbackInterval = undefined;
     }
 
-    this._currentTrackIndex =
-      (this._currentTrackIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
+    this._currentTrackIndex = (this._currentTrackIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
     this._position = 0;
 
     const track = this.getTrack(this._currentTrackIndex);
@@ -231,7 +230,7 @@ class MediaPlayerInterface extends DBusInterface {
   Seek(seconds: number): boolean {
     const track = this.getTrack(this._currentTrackIndex);
     const newPosition = Math.max(0, Math.min(track.duration, this._position + seconds));
-    
+
     console.log(`[Player] Seek: ${this._position}s -> ${newPosition}s`);
     this._position = newPosition;
 
@@ -239,9 +238,7 @@ class MediaPlayerInterface extends DBusInterface {
   }
 
   GetPlaylist(): string[] {
-    return PLAYLIST.map(
-      (track) => `${track.title} - ${track.artist} (${track.duration}s)`
-    );
+    return PLAYLIST.map((track) => `${track.title} - ${track.artist} (${track.duration}s)`);
   }
 
   cleanup() {
@@ -255,63 +252,63 @@ class MediaPlayerInterface extends DBusInterface {
 MediaPlayerInterface.configureMembers({
   signals: {
     TrackChanged: {
-      signature: "ss"
+      signature: "ss",
     },
     StatusChanged: {
-      signature: "s"
+      signature: "s",
     },
     VolumeChanged: {
-      signature: "i"
-    }
+      signature: "i",
+    },
   },
   properties: {
     Status: {
       signature: "s",
-      access: dbus.interface.ACCESS_READ
+      access: dbus.interface.ACCESS_READ,
     },
     Volume: {
       signature: "i",
-      access: dbus.interface.ACCESS_READWRITE
+      access: dbus.interface.ACCESS_READWRITE,
     },
     CurrentTrack: {
       signature: "s",
-      access: dbus.interface.ACCESS_READ
+      access: dbus.interface.ACCESS_READ,
     },
     Position: {
       signature: "i",
-      access: dbus.interface.ACCESS_READ
-    }
+      access: dbus.interface.ACCESS_READ,
+    },
   },
   methods: {
     Play: {
       inSignature: "",
-      outSignature: "b"
+      outSignature: "b",
     },
     Pause: {
       inSignature: "",
-      outSignature: "b"
+      outSignature: "b",
     },
     Stop: {
       inSignature: "",
-      outSignature: "b"
+      outSignature: "b",
     },
     Next: {
       inSignature: "",
-      outSignature: "b"
+      outSignature: "b",
     },
     Previous: {
       inSignature: "",
-      outSignature: "b"
+      outSignature: "b",
     },
     Seek: {
       inSignature: "i",
-      outSignature: "b"
+      outSignature: "b",
     },
     GetPlaylist: {
       inSignature: "",
-      outSignature: "as"
-    }
-  }
+      outSignature: "as",
+    },
+  },
 });
 
 async function startService() {
@@ -385,7 +382,7 @@ async function demonstrateMediaPlayer() {
   await new Promise((resolve) => setTimeout(resolve, 500));
 
   console.log("=== Getting Initial State ===\n");
-  
+
   const playlist = await client.player.GetPlaylist();
   console.log("[Client] Playlist:");
   playlist.forEach((track, i: number) => {
@@ -396,7 +393,7 @@ async function demonstrateMediaPlayer() {
   const status = await client.player.Status;
   const volume = await client.player.Volume;
   const currentTrack = await client.player.CurrentTrack;
-  
+
   console.log(`[Client] Status: ${status}`);
   console.log(`[Client] Volume: ${volume}%`);
   console.log(`[Client] Current track: ${currentTrack}\n`);
