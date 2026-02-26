@@ -2,7 +2,7 @@ import GLib from "gi://GLib?version=2.0";
 import GLibUnix from "gi://GLibUnix?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import System from "system";
-import { SERVICE_NAME, OBJECT_PATH } from "./constants.js";
+import { SERVICE_NAME, OBJECT_PATH, BACKENDS } from "./constants.js";
 import { BackendRegistry } from "./backend-registry.js";
 import { Manager } from "./manager.js";
 import { FlatpakBackend } from "./flatpak/index.js";
@@ -12,7 +12,7 @@ import { FlatpakBackend } from "./flatpak/index.js";
 // ---------------------------------------------------------------------------
 
 const registry = new BackendRegistry();
-registry.register("flatpak", new FlatpakBackend());
+registry.register(BACKENDS.flatpak, new FlatpakBackend());
 
 const manager = new Manager(registry);
 

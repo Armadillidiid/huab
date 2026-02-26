@@ -1,4 +1,5 @@
 export { HuabClient } from "./client.ts";
+export { BACKENDS } from "./constants.ts";
 export type {
   Package,
   AnyPackage,

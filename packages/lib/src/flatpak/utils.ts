@@ -1,5 +1,6 @@
 import type { FlatpakPackage, PackageUpdate } from "@/types";
 import Flatpak from "@girs/flatpak-1.0";
+import { BACKENDS } from "../constants.js";
 
 // ── Installed refs ──────────────────────────────────────────────────────────
 
@@ -31,7 +32,7 @@ function refsFromInst(inst: Flatpak.Installation): FlatpakPackage[] {
           installed_size: r.get_installed_size(),
           download_size: 0,
           install_date: null,
-          backend: "flatpak" as const,
+          backend: BACKENDS.flatpak,
         };
       });
   } catch (e) {
@@ -61,7 +62,7 @@ function updateRefsFromInst(
             name: pkg.name,
             currentVersion: pkg.version,
             newVersion: "update available",
-            backend: "flatpak" as const,
+            backend: BACKENDS.flatpak,
           },
         ];
       });
@@ -102,7 +103,7 @@ function remoteRefsFromInst(inst: Flatpak.Installation, remote: string): Flatpak
           installed_size: 0,
           download_size: 0,
           install_date: null,
-          backend: "flatpak" as const,
+          backend: BACKENDS.flatpak,
         };
       });
   } catch (e) {
