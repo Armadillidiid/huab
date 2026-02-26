@@ -1,4 +1,4 @@
-import type { PackageBackend, Package, PackageUpdate } from './types.js';
+import type { PackageBackend, AnyPackage, PackageUpdate } from './types.js';
 import type { IPackageBackend } from './backend.js';
 
 export class BackendRegistry {
@@ -16,7 +16,7 @@ export class BackendRegistry {
     return backend;
   }
 
-  listInstalled(backend: PackageBackend): Package[] {
+  listInstalled(backend: PackageBackend): AnyPackage[] {
     return this.get(backend).listInstalled();
   }
 
@@ -24,7 +24,7 @@ export class BackendRegistry {
     return this.get(backend).listUpdates();
   }
 
-  listAllInstalled(): Package[] {
+  listAllInstalled(): AnyPackage[] {
     return Array.from(this.backends.values()).flatMap(b => b.listInstalled());
   }
 

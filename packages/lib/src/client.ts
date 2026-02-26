@@ -1,5 +1,5 @@
 import * as dbus from "dbus-next";
-import type { Package, PackageBackend, PackageUpdate, Promisify } from "./types.ts";
+import type { AnyPackage, PackageBackend, PackageUpdate, Promisify } from "./types.ts";
 import { SERVICE_NAME, OBJECT_PATH, IFACE_NAME } from "./constants.ts";
 import type { ManagerIface } from "./manager-iface.ts";
 
@@ -17,10 +17,10 @@ export class HuabClient {
     return obj.getInterface(IFACE_NAME) as unknown as ManagerProxy;
   }
 
-  async listInstalled(backend: PackageBackend): Promise<Package[]> {
+  async listInstalled(backend: PackageBackend): Promise<AnyPackage[]> {
     const manager = await this.proxy();
     const json = await manager.ListInstalled(backend);
-    return JSON.parse(json) as Package[];
+    return JSON.parse(json) as AnyPackage[];
   }
 
   async listUpdates(backend: PackageBackend): Promise<PackageUpdate[]> {
@@ -29,10 +29,10 @@ export class HuabClient {
     return JSON.parse(json) as PackageUpdate[];
   }
 
-  async listAllInstalled(): Promise<Package[]> {
+  async listAllInstalled(): Promise<AnyPackage[]> {
     const manager = await this.proxy();
     const json = await manager.ListAllInstalled();
-    return JSON.parse(json) as Package[];
+    return JSON.parse(json) as AnyPackage[];
   }
 
   async listAllUpdates(): Promise<PackageUpdate[]> {

@@ -1,7 +1,7 @@
-import type { Package, PackageUpdate } from './types.js';
+import type { AnyPackage, PackageUpdate } from './types.js';
 
 /** Contract every package-manager backend must satisfy. */
 export interface IPackageBackend {
-  listInstalled(): Package[];
+  listInstalled(): AnyPackage[];
   listUpdates(): PackageUpdate[];
 }

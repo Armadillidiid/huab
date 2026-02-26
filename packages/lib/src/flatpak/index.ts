@@ -1,5 +1,5 @@
 import Flatpak from "gi://Flatpak?version=1.0";
-import type { Package, PackageUpdate } from "../types.js";
+import type { AnyPackage, FlatpakPackage, PackageUpdate } from "../types.js";
 import type { IPackageBackend } from "../backend.js";
 import { refsFromInst, updateRefsFromInst } from "./utils.js";
 
@@ -12,12 +12,12 @@ export class FlatpakBackend implements IPackageBackend {
     this.sysInst = Flatpak.Installation.new_system(null);
   }
 
-  listInstalled(): Package[] {
+  listInstalled(): AnyPackage[] {
     return [...refsFromInst(this.userInst), ...refsFromInst(this.sysInst)];
   }
 
   listUpdates(): PackageUpdate[] {
-    const installed = this.listInstalled();
+    const installed = this.listInstalled() as FlatpakPackage[];
     const installedMap = new Map(installed.map((p) => [p.name, p]));
     return [
       ...updateRefsFromInst(this.userInst, installedMap),

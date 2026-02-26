@@ -1,9 +1,13 @@
 export { HuabClient } from "./client.ts";
 export type {
   Package,
+  AnyPackage,
+  FlatpakPackage,
+  AlpmPackage,
+  AURPackage,
+  SnapPackage,
   PackageUpdate,
   SearchResult,
-  PackageStatus,
   PackageBackend,
   CacheInfo,
 } from "./types.ts";

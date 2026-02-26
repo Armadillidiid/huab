@@ -1,8 +1,8 @@
 import type { IPackageBackend } from '../backend.js';
-import type { Package, PackageUpdate } from '../types.js';
+import type { PackageUpdate, SnapPackage } from '../types.js';
 
 export class SnapBackend implements IPackageBackend {
-  listInstalled(): Package[] {
+  listInstalled(): SnapPackage[] {
     throw new Error('SnapBackend: not implemented');
   }
 
