@@ -4,7 +4,13 @@
   "compilerOptions": {
     "lib": ["ESNext"],
     "allowJs": true,
-    "types": ["@types/bun"],
+    "types": [
+      "@girs/gio-2.0",
+      "@girs/gjs",
+      "@girs/glib-2.0",
+      "@girs/glibunix-2.0",
+      "@girs/flatpak-1.0"
+    ],
     "noUncheckedIndexedAccess": false,
     "resolveJsonModule": true,
 

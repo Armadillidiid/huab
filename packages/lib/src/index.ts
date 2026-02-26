@@ -1,5 +1,4 @@
 export { HuabClient } from "./client.ts";
-export { FlatpakClient } from "./flatpak.ts";
 export type {
   Package,
   PackageUpdate,
