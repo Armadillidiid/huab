@@ -7,8 +7,7 @@ import { BACKENDS } from "../constants.js";
 function refsFromInst(inst: Flatpak.Installation): FlatpakPackage[] {
   try {
     return inst
-      .list_installed_refs(null)
-      .filter((r) => r.get_kind() === Flatpak.RefKind.APP)
+      .list_installed_refs_by_kind(Flatpak.RefKind.APP, null)
       .map((r) => {
         const appId = r.get_name();
         const appName = appId.split(".").at(-1) ?? appId;
@@ -77,7 +76,10 @@ function updateRefsFromInst(
 /**
  * List all APP refs available from a given remote, returned as uninstalled
  */
-function remoteRefsFromInst(inst: Flatpak.Installation, remote: string): FlatpakPackage[] {
+function remoteRefsFromInst(
+  inst: Flatpak.Installation,
+  remote: string,
+): FlatpakPackage[] {
   try {
     return inst
       .list_remote_refs_sync(remote, null)
@@ -107,7 +109,10 @@ function remoteRefsFromInst(inst: Flatpak.Installation, remote: string): Flatpak
         };
       });
   } catch (e) {
-    logError(e as object, `[Huab] list_remote_refs_sync failed for remote "${remote}"`);
+    logError(
+      e as object,
+      `[Huab] list_remote_refs_sync failed for remote "${remote}"`,
+    );
     return [];
   }
 }

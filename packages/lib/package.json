@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build:daemon": "bun build src/daemon.ts --target=node --format=esm --external 'gi://*' --external 'system' --outfile dist/daemon.js",
-    "service": "pnpm build:daemon && gjs -m dist/daemon.js",
+    "service": "bun build:daemon && gjs -m dist/daemon.js",
     "typecheck": "tsc --noEmit",
     "build": "echo 'To be worked on'",
     "lint": "oxlint --type-aware src",
