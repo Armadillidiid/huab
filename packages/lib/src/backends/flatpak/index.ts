@@ -1,7 +1,7 @@
 import Flatpak from "gi://Flatpak?version=1.0";
-import type { AnyPackage, FlatpakPackage, PackageUpdate } from "../types.js";
-import type { IPackageBackend } from "../backend.js";
-import { refsFromInst, updateRefsFromInst, remoteRefsFromInst } from "./utils.js";
+import type { AnyPackage, FlatpakPackage, PackageUpdate } from "../../types.ts";
+import type { IPackageBackend } from "../backend.ts";
+import { refsFromInst, updateRefsFromInst, remoteRefsFromInst } from "./utils.ts";
 
 export class FlatpakBackend implements IPackageBackend {
   private readonly userInst: Flatpak.Installation;

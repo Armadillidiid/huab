@@ -1,4 +1,5 @@
-import { IFACE_NAME } from "./constants.js";
+import { IFACE_NAME } from "../constants.ts";
+
 
 export const MANAGER_IFACE_XML = `
 <node>

@@ -1,11 +1,11 @@
+import { BackendRegistry } from "../backends/backend-registry.ts";
+import { FlatpakBackend } from "../backends/flatpak/index.ts";
+import { BACKENDS, SERVICE_NAME, OBJECT_PATH } from "../constants.ts";
 import GLib from "gi://GLib?version=2.0";
 import GLibUnix from "gi://GLibUnix?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import System from "system";
-import { SERVICE_NAME, OBJECT_PATH, BACKENDS } from "./constants.js";
-import { BackendRegistry } from "./backend-registry.js";
-import { Manager } from "./manager.js";
-import { FlatpakBackend } from "./flatpak/index.js";
+import { Manager } from "./manager.ts";
 
 // ---------------------------------------------------------------------------
 // Wire up backends + D-Bus controller

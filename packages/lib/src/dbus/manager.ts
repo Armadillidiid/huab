@@ -1,6 +1,6 @@
 import Gio from "gi://Gio?version=2.0";
-import { MANAGER_IFACE_XML, type ManagerIface } from "./manager-iface.js";
-import { type BackendRegistry, parseBackend } from "./backend-registry.js";
+import { type BackendRegistry, parseBackend } from "../backends/backend-registry.ts";
+import { type ManagerIface, MANAGER_IFACE_XML } from "./manager-iface.ts";
 
 export class Manager implements ManagerIface {
   readonly dbus: Gio.DBusExportedObject;

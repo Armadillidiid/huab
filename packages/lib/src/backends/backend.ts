@@ -1,4 +1,4 @@
-import type { AnyPackage, PackageUpdate } from "./types.js";
+import type { AnyPackage, PackageUpdate } from "../types.ts";
 
 /**
  * Core contract every backend must satisfy.

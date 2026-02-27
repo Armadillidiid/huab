@@ -1,6 +1,6 @@
-import type { FlatpakPackage, PackageUpdate } from "@/types";
+import type { FlatpakPackage, PackageUpdate } from "../../types.ts";
 import Flatpak from "@girs/flatpak-1.0";
-import { BACKENDS } from "../constants.js";
+import { BACKENDS } from "../../constants.ts";
 
 // ── Installed refs ──────────────────────────────────────────────────────────
 

@@ -15,7 +15,6 @@
     "resolveJsonModule": true,
 
     // Native Node support
-    "allowImportingTsExtensions": true,
     "rewriteRelativeImportExtensions": true,
     "erasableSyntaxOnly": true,
     "paths": {

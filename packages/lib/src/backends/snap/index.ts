@@ -1,5 +1,5 @@
-import type { IPackageBackend } from "../backend.js";
-import type { AnyPackage, PackageUpdate, SnapPackage } from "../types.js";
+import type { IPackageBackend } from "../backend.ts";
+import type { AnyPackage, PackageUpdate, SnapPackage } from "../../types.ts";
 
 export class SnapBackend implements IPackageBackend {
   // ── Required ─────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-export { HuabClient } from "./client.ts";
+export { HuabClient } from "./client/client.ts";
 export { BACKENDS } from "./constants.ts";
 export type {
   Package,

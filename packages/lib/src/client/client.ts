@@ -1,7 +1,12 @@
 import * as dbus from "dbus-next";
-import type { AnyPackage, PackageBackend, PackageUpdate, Promisify } from "./types.ts";
-import { SERVICE_NAME, OBJECT_PATH, IFACE_NAME } from "./constants.ts";
-import type { ManagerIface } from "./manager-iface.ts";
+import type {
+  AnyPackage,
+  PackageBackend,
+  PackageUpdate,
+  Promisify,
+} from "../types.ts";
+import { SERVICE_NAME, OBJECT_PATH, IFACE_NAME } from "../constants.ts";
+import type { ManagerIface } from "../dbus/manager-iface.ts";
 
 type ManagerProxy = dbus.ClientInterface & Promisify<ManagerIface>;
 
@@ -57,7 +62,10 @@ export class HuabClient {
     return JSON.parse(json) as AnyPackage[];
   }
 
-  async getPackage(backend: PackageBackend, id: string): Promise<AnyPackage | null> {
+  async getPackage(
+    backend: PackageBackend,
+    id: string,
+  ): Promise<AnyPackage | null> {
     const manager = await this.proxy();
     const json = await manager.GetPackage(backend, id);
     return JSON.parse(json) as AnyPackage | null;
@@ -75,7 +83,10 @@ export class HuabClient {
     return JSON.parse(json) as AnyPackage[];
   }
 
-  async listByCategory(backend: PackageBackend, category: string): Promise<AnyPackage[]> {
+  async listByCategory(
+    backend: PackageBackend,
+    category: string,
+  ): Promise<AnyPackage[]> {
     const manager = await this.proxy();
     const json = await manager.ListByCategory(backend, category);
     return JSON.parse(json) as AnyPackage[];

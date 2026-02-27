@@ -1,6 +1,6 @@
-import type { PackageBackend, AnyPackage, PackageUpdate } from "./types.js";
-import type { IPackageBackend } from "./backend.js";
-import { KNOWN_BACKENDS } from "./constants.js";
+import { KNOWN_BACKENDS } from "../constants.ts";
+import type { PackageBackend, AnyPackage, PackageUpdate } from "../types.ts";
+import type { IPackageBackend } from "./backend.ts";
 
 /**
  * Validate and narrow a raw D-Bus string to a known PackageBackend.
