@@ -70,8 +70,8 @@ export class AppStreamStore {
     const launchable = comp.get_launchable(AppStream.LaunchableKind.DESKTOP_ID);
 
     return {
-      desc: comp.get_summary() ?? null,
-      long_desc: comp.get_description() ?? null,
+      summary: comp.get_summary() ?? null,
+      description: comp.get_description() ?? null,
       url: comp.get_url(AppStream.UrlKind.HOMEPAGE) ?? null,
       app_name: comp.get_name() ?? null,
       app_id,

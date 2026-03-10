@@ -17,6 +17,7 @@ export class FlatpakPackage {
     const arch = r.get_arch() ?? "";
     const branch = r.get_branch() ?? "";
     const refStr = r.format_ref() ?? `app/${appId}/${arch}/${branch}`;
+    const kind = r.get_kind();
 
     let version: string = "unknown";
     let installed_version: string | null = null;
@@ -41,7 +42,6 @@ export class FlatpakPackage {
       repo = r.get_origin() || null;
       installed_size = r.get_installed_size();
     }
-
     const as = appstream?.enrich(appId) ?? null;
 
     return {
@@ -60,9 +60,10 @@ export class FlatpakPackage {
       runtime: null,
       command: null,
       eol,
+      kind,
       // AppStream fields — populated via AppStreamStore if provided
-      desc: as?.desc ?? null,
-      long_desc: as?.long_desc ?? null,
+      summary: as?.summary ?? null,
+      description: as?.description ?? null,
       url: as?.url ?? null,
       app_name: as?.app_name ?? appName,
       app_id: as?.app_id ?? appId,

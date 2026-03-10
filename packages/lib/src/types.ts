@@ -6,7 +6,10 @@ import { KNOWN_BACKENDS } from "./constants.ts";
 // ---------------------------------------------------------------------------
 
 export const PackageBackendSchema = z.enum(
-  KNOWN_BACKENDS as [(typeof KNOWN_BACKENDS)[number], ...(typeof KNOWN_BACKENDS)[number][]],
+  KNOWN_BACKENDS as [
+    (typeof KNOWN_BACKENDS)[number],
+    ...(typeof KNOWN_BACKENDS)[number][],
+  ],
 );
 
 export type PackageBackend = z.infer<typeof PackageBackendSchema>;
@@ -35,9 +38,9 @@ export type Package = z.infer<typeof PackageSchema>;
 
 export const AppStreamPackageSchema = z.object({
   /** Short one-line summary (as_component_get_summary) */
-  desc: z.string().nullable(),
+  summary: z.string().nullable(),
   /** Full HTML/Markdown description (as_component_get_description) */
-  long_desc: z.string().nullable(),
+  description: z.string().nullable(),
   /** Homepage URL (as_component_get_url, homepage) */
   url: z.string().nullable(),
   /** Human-friendly app name from AppStream (as_component_get_name) */
@@ -71,7 +74,9 @@ export type AppStreamPackage = z.infer<typeof AppStreamPackageSchema>;
 // plus all shared rich fields and Flatpak-specific libflatpak fields.
 // ---------------------------------------------------------------------------
 
-export const FlatpakPackageSchema = PackageSchema.merge(AppStreamPackageSchema).extend({
+export const FlatpakPackageSchema = PackageSchema.extend(
+  AppStreamPackageSchema.shape,
+).extend({
   backend: z.literal("flatpak"),
   /** Currently installed version (null if not installed) */
   installed_version: z.string().nullable(),
@@ -95,6 +100,8 @@ export const FlatpakPackageSchema = PackageSchema.merge(AppStreamPackageSchema).
   command: z.string().nullable(),
   /** End-of-life message (null if not EOL) */
   eol: z.string().nullable(),
+  /** The kind of artifact that a FlatpakRef refers to. */
+  kind: z.int(),
 });
 
 export type FlatpakPackage = z.infer<typeof FlatpakPackageSchema>;
