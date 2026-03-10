@@ -8,9 +8,7 @@ import { createClient } from "@hey-api/openapi-ts";
 const dir = new URL("..", import.meta.url).pathname;
 
 // Generate OpenAPI spec
-await $`bun run gen:openapi > ${dir}/openapi.json`.cwd(
-  path.resolve(dir, "../huab"),
-);
+await $`bun run gen:openapi > ${dir}/openapi.json`.cwd(path.resolve(dir, "../huab"));
 
 // Create TS client
 await createClient({
@@ -42,4 +40,4 @@ await createClient({
   ],
 });
 
-// TODO: format openapi spec
+await $`bun run format`.cwd(dir);

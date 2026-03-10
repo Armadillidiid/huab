@@ -2,17 +2,17 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@huab/sdk",
   "type": "module",
+  "exports": {
+    ".": "./js/src/gen/client/index.ts",
+    "./client": "./js/src/gen/client.gen.ts",
+    "./sdk": "./js/src/gen/sdk.gen.ts"
+  },
   "scripts": {
     "typecheck": "tsgo --noEmit",
     "build": "./script/build.ts",
-    "lint": "oxlint --type-aware src",
-    "lint:fix": "oxlint --type-aware --fix src",
-    "format": "oxfmt src"
-  },
-  "exports": {
-    ".": "./js/src/gen/client/",
-    "./client": "./js/src/gen/client.gen.ts",
-    "./sdk": "./js/src/gen/sdk.gen.ts"
+    "lint": "oxlint --type-aware --ignore-pattern='js/**'",
+    "lint:fix": "oxlint --type-aware --fix --ignore-pattern='js/**'",
+    "format": "oxfmt"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "0.92.4",
