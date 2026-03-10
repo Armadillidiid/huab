@@ -29,10 +29,7 @@ export class AppStreamStore {
         const path = dir.get_path();
         if (!path) continue;
         try {
-          this.pool.add_extra_data_location(
-            path,
-            AppStream.FormatStyle.CATALOG,
-          );
+          this.pool.add_extra_data_location(path, AppStream.FormatStyle.CATALOG);
         } catch {
           // skip unreadable dirs silently
         }
@@ -58,20 +55,14 @@ export class AppStreamStore {
 
     // Icon: prefer CACHED, fall back to STOCK name
     const icons = comp.get_icons();
-    const cached = icons.find(
-      (i: AppStream.Icon) => i.get_kind() === AppStream.IconKind.CACHED,
-    );
-    const stock = icons.find(
-      (i: AppStream.Icon) => i.get_kind() === AppStream.IconKind.STOCK,
-    );
+    const cached = icons.find((i: AppStream.Icon) => i.get_kind() === AppStream.IconKind.CACHED);
+    const stock = icons.find((i: AppStream.Icon) => i.get_kind() === AppStream.IconKind.STOCK);
 
     // Screenshots: SOURCE images across all screenshots
     const screenshots = comp
       .get_screenshots_all()
       .flatMap((s: AppStream.Screenshot) => s.get_images_all())
-      .filter(
-        (i: AppStream.Image) => i.get_kind() === AppStream.ImageKind.SOURCE,
-      )
+      .filter((i: AppStream.Image) => i.get_kind() === AppStream.ImageKind.SOURCE)
       .map((i: AppStream.Image) => i.get_url())
       .filter((u: string): u is string => Boolean(u));
 
@@ -79,20 +70,20 @@ export class AppStreamStore {
     const launchable = comp.get_launchable(AppStream.LaunchableKind.DESKTOP_ID);
 
     return {
-      desc:         comp.get_summary() ?? null,
-      long_desc:    comp.get_description() ?? null,
-      url:          comp.get_url(AppStream.UrlKind.HOMEPAGE) ?? null,
-      app_name:     comp.get_name() ?? null,
+      desc: comp.get_summary() ?? null,
+      long_desc: comp.get_description() ?? null,
+      url: comp.get_url(AppStream.UrlKind.HOMEPAGE) ?? null,
+      app_name: comp.get_name() ?? null,
       app_id,
-      launchable:   launchable?.get_entries()?.at(0) ?? null,
-      icon:         cached?.get_filename() ?? stock?.get_name() ?? null,
+      launchable: launchable?.get_entries()?.at(0) ?? null,
+      icon: cached?.get_filename() ?? stock?.get_name() ?? null,
       screenshots,
-      license:      comp.get_project_license() ?? null,
-      keywords:     comp.get_keywords() ?? [],
-      categories:   comp.get_categories() ?? [],
-      developer:    dev?.get_name() ?? null,
+      license: comp.get_project_license() ?? null,
+      keywords: comp.get_keywords() ?? [],
+      categories: comp.get_categories() ?? [],
+      developer: dev?.get_name() ?? null,
       donation_url: comp.get_url(AppStream.UrlKind.DONATION) ?? null,
-      is_floss:     comp.is_floss(),
+      is_floss: comp.is_floss(),
     };
   }
 }

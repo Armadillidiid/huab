@@ -55,10 +55,7 @@ export class FlatpakBackend implements IPackageBackend {
             }
           }
         } catch (e) {
-          logError(
-            e as object,
-            `[Huab] list_remote_refs_sync failed for remote "${remoteName}"`,
-          );
+          logError(e as object, `[Huab] list_remote_refs_sync failed for remote "${remoteName}"`);
         }
       }
     };

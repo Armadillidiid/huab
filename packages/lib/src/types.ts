@@ -6,10 +6,7 @@ import { KNOWN_BACKENDS } from "./constants.ts";
 // ---------------------------------------------------------------------------
 
 export const PackageBackendSchema = z.enum(
-  KNOWN_BACKENDS as [
-    (typeof KNOWN_BACKENDS)[number],
-    ...(typeof KNOWN_BACKENDS)[number][],
-  ],
+  KNOWN_BACKENDS as [(typeof KNOWN_BACKENDS)[number], ...(typeof KNOWN_BACKENDS)[number][]],
 );
 
 export type PackageBackend = z.infer<typeof PackageBackendSchema>;
@@ -74,9 +71,7 @@ export type AppStreamPackage = z.infer<typeof AppStreamPackageSchema>;
 // plus all shared rich fields and Flatpak-specific libflatpak fields.
 // ---------------------------------------------------------------------------
 
-export const FlatpakPackageSchema = PackageSchema.merge(
-  AppStreamPackageSchema,
-).extend({
+export const FlatpakPackageSchema = PackageSchema.merge(AppStreamPackageSchema).extend({
   backend: z.literal("flatpak"),
   /** Currently installed version (null if not installed) */
   installed_version: z.string().nullable(),

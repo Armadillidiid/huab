@@ -1,9 +1,5 @@
 import * as dbus from "dbus-next";
-import type {
-  AnyPackage,
-  PackageBackend,
-  Promisify,
-} from "../types.ts";
+import type { AnyPackage, PackageBackend, Promisify } from "../types.ts";
 import { SERVICE_NAME, OBJECT_PATH, IFACE_NAME } from "../constants.ts";
 import type { ManagerIface } from "../dbus/manager-iface.ts";
 
