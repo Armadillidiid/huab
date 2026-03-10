@@ -1,4 +1,4 @@
-import type { AnyPackage, PackageUpdate } from "../types.ts";
+import type { AnyPackage } from "../types.ts";
 
 /**
  * Core contract every backend must satisfy.
@@ -10,24 +10,6 @@ import type { AnyPackage, PackageUpdate } from "../types.ts";
  * silently skipped.
  */
 export interface IPackageBackend {
-  // ── Required ────────────────────────────────────────────────────────────
-  listInstalled(): AnyPackage[];
-  listUpdates(): PackageUpdate[];
-
-  // ── Optional — not all backends support every operation ─────────────────
-
-  /** Full-text search by name/description. */
-  search?(query: string): AnyPackage[];
-
-  /** Fetch a single package by its backend-specific ID. */
-  getPackage?(id: string): AnyPackage | null;
-
-  /** List all packages available from remotes (installed or not). */
-  listAvailable?(): AnyPackage[];
-
-  /** List packages belonging to an AppStream/store category. */
-  listByCategory?(category: string): AnyPackage[];
-
-  /** Refresh local package database / AppStream metadata. */
-  refreshMetadata?(): void;
+  /** Returns all packages available from remotes */
+  listAvailable(): AnyPackage[];
 }

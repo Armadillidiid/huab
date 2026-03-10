@@ -7,8 +7,5 @@ export type {
   AlpmPackage,
   AURPackage,
   SnapPackage,
-  PackageUpdate,
-  SearchResult,
   PackageBackend,
-  CacheInfo,
 } from "./types.ts";

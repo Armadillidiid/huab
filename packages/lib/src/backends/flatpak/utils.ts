@@ -1,9 +1,10 @@
-import type { FlatpakPackage, PackageUpdate } from "../../types.ts";
+import type { FlatpakPackage } from "../../types.ts";
 import Flatpak from "@girs/flatpak-1.0";
 import { BACKENDS } from "../../constants.ts";
 
-// ── Installed refs ──────────────────────────────────────────────────────────
-
+/**
+ * List all installed APP refs from a given installation
+ */
 function refsFromInst(inst: Flatpak.Installation): FlatpakPackage[] {
   try {
     return inst
@@ -39,39 +40,6 @@ function refsFromInst(inst: Flatpak.Installation): FlatpakPackage[] {
     return [];
   }
 }
-
-// ── Update refs ─────────────────────────────────────────────────────────────
-
-function updateRefsFromInst(
-  inst: Flatpak.Installation,
-  installedMap: Map<string, FlatpakPackage>,
-): PackageUpdate[] {
-  try {
-    return inst
-      .list_installed_refs_for_update(null)
-      .filter((r) => r.get_kind() === Flatpak.RefKind.APP)
-      .flatMap((r) => {
-        const appId = r.get_name();
-        const shortName = appId.split(".").at(-1) ?? appId;
-        const pkg = installedMap.get(shortName);
-        if (!pkg) return [];
-        return [
-          {
-            id: pkg.id,
-            name: pkg.name,
-            currentVersion: pkg.version,
-            newVersion: "update available",
-            backend: BACKENDS.flatpak,
-          },
-        ];
-      });
-  } catch (e) {
-    logError(e as object, "[Huab] list_installed_refs_for_update failed");
-    return [];
-  }
-}
-
-// ── Remote (available) refs ─────────────────────────────────────────────────
 
 /**
  * List all APP refs available from a given remote, returned as uninstalled
@@ -117,4 +85,4 @@ function remoteRefsFromInst(
   }
 }
 
-export { refsFromInst, updateRefsFromInst, remoteRefsFromInst };
+export { refsFromInst, remoteRefsFromInst };

@@ -1,37 +1,8 @@
 import { IFACE_NAME } from "../constants.ts";
 
-
 export const MANAGER_IFACE_XML = `
 <node>
   <interface name="${IFACE_NAME}">
-    <method name="ListInstalled">
-      <arg direction="in"  type="s" name="backend"/>
-      <arg direction="out" type="s" name="packages"/>
-    </method>
-    <method name="ListUpdates">
-      <arg direction="in"  type="s" name="backend"/>
-      <arg direction="out" type="s" name="updates"/>
-    </method>
-    <method name="ListAllInstalled">
-      <arg direction="out" type="s" name="packages"/>
-    </method>
-    <method name="ListAllUpdates">
-      <arg direction="out" type="s" name="updates"/>
-    </method>
-    <method name="Search">
-      <arg direction="in"  type="s" name="backend"/>
-      <arg direction="in"  type="s" name="query"/>
-      <arg direction="out" type="s" name="packages"/>
-    </method>
-    <method name="SearchAll">
-      <arg direction="in"  type="s" name="query"/>
-      <arg direction="out" type="s" name="packages"/>
-    </method>
-    <method name="GetPackage">
-      <arg direction="in"  type="s" name="backend"/>
-      <arg direction="in"  type="s" name="id"/>
-      <arg direction="out" type="s" name="package"/>
-    </method>
     <method name="ListAvailable">
       <arg direction="in"  type="s" name="backend"/>
       <arg direction="out" type="s" name="packages"/>
@@ -39,36 +10,41 @@ export const MANAGER_IFACE_XML = `
     <method name="ListAllAvailable">
       <arg direction="out" type="s" name="packages"/>
     </method>
-    <method name="ListByCategory">
-      <arg direction="in"  type="s" name="backend"/>
-      <arg direction="in"  type="s" name="category"/>
-      <arg direction="out" type="s" name="packages"/>
+    <method name="Install">
+      <arg direction="in" type="s" name="backend"/>
+      <arg direction="in" type="s" name="packageId"/>
     </method>
-    <method name="ListAllByCategory">
-      <arg direction="in"  type="s" name="category"/>
-      <arg direction="out" type="s" name="packages"/>
+    <method name="Remove">
+      <arg direction="in" type="s" name="backend"/>
+      <arg direction="in" type="s" name="packageId"/>
     </method>
-    <method name="RefreshMetadata">
-      <arg direction="in"  type="s" name="backend"/>
+    <method name="Update">
+      <arg direction="in" type="s" name="backend"/>
+      <arg direction="in" type="s" name="packageId"/>
     </method>
-    <method name="RefreshAllMetadata">
+    <method name="UpdateBatch">
+      <arg direction="in" type="s" name="backend"/>
+      <arg direction="in" type="as" name="packageIds"/>
     </method>
   </interface>
 </node>`;
 
-/** TypeScript view of the Manager D-Bus interface. */
+/**
+ * TypeScript view of the Manager D-Bus interface.
+ * All query methods return JSON-encoded strings to avoid issues with complex D-Bus types.
+ */
 export interface ManagerIface {
-  ListInstalled(backend: string): string;
-  ListUpdates(backend: string): string;
-  ListAllInstalled(): string;
-  ListAllUpdates(): string;
-  Search(backend: string, query: string): string;
-  SearchAll(query: string): string;
-  GetPackage(backend: string, id: string): string;
-  ListAvailable(backend: string): string;
-  ListAllAvailable(): string;
-  ListByCategory(backend: string, category: string): string;
-  ListAllByCategory(category: string): string;
-  RefreshMetadata(backend: string): void;
-  RefreshAllMetadata(): void;
+  // ── Query ─────────────────────────────────────────────────────────────────
+  ListAvailable(backend: string): string; // string -> AnyPackage[]
+  ListAllAvailable(): string; // string -> AnyPackage[]
+
+  // ── Mutations ─────────────────────────────────────────────────────────────
+  // TODO: Mutations will use the Manager/Transaction paradigm — each call will
+  // spawn a transaction object on a well-known D-Bus path that the client can
+  // subscribe to for progress signals and a final result. The signatures below
+  // are placeholder stubs until the transaction model is fleshed out.
+  Install(backend: string, packageId: string): void;
+  Remove(backend: string, packageId: string): void;
+  Update(backend: string, packageId: string): void;
+  UpdateBatch(backend: string, packageIds: string[]): void;
 }

@@ -3,7 +3,7 @@ import type { KNOWN_BACKENDS } from "./constants";
 export type PackageBackend = (typeof KNOWN_BACKENDS)[number];
 
 /**
- * Base package interface — fields present on ALL backends.
+ * Base package interface - fields present on ALL backends.
  * All values are JSON-serializable: no bigint, no Date.
  */
 export interface Package {
@@ -13,7 +13,10 @@ export interface Package {
   name: string;
   /** Available/latest version string */
   version: string;
-  /** Currently installed version (null if not installed) */
+  /**
+   * Currently installed version (null if not installed)
+   * If `installed_version` !== `version`, then an update is available
+   */
   installed_version: string | null;
   /** Short one-line description */
   desc: string | null;
@@ -44,7 +47,7 @@ export interface Package {
   backend: PackageBackend;
 }
 
-/** Flatpak package — no extra fields beyond base; AppStream provides all metadata. */
+/** Flatpak package - no extra fields beyond base; AppStream provides all metadata. */
 export interface FlatpakPackage extends Package {
   backend: "flatpak";
 }
@@ -72,7 +75,7 @@ export interface AlpmPackage extends Package {
   validations: string[];
 }
 
-/** AUR package — extends AlpmPackage with AUR-specific metadata. */
+/** AUR package - extends AlpmPackage with AUR-specific metadata. */
 export interface AURPackage extends Omit<AlpmPackage, "backend"> {
   backend: "aur";
   packagebase: string | null;
@@ -100,26 +103,11 @@ export interface SnapPackage extends Package {
 }
 
 /** Discriminated union of all concrete package types. */
-export type AnyPackage = FlatpakPackage | AlpmPackage | AURPackage | SnapPackage;
-
-export interface SearchResult {
-  installed: AnyPackage[];
-  available: AnyPackage[];
-  total: number;
-}
-
-export interface PackageUpdate {
-  id: string;
-  name: string;
-  currentVersion: string;
-  newVersion: string;
-  backend: PackageBackend;
-}
-
-export interface CacheInfo {
-  totalSize: number;
-  fileCount: number;
-}
+export type AnyPackage =
+  | FlatpakPackage
+  | AlpmPackage
+  | AURPackage
+  | SnapPackage;
 
 /**
  * Convert D-Bus interfaces to async/Promise-based ones.

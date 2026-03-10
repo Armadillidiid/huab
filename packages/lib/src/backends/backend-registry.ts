@@ -1,5 +1,5 @@
 import { KNOWN_BACKENDS } from "../constants.ts";
-import type { PackageBackend, AnyPackage, PackageUpdate } from "../types.ts";
+import type { PackageBackend, AnyPackage } from "../types.ts";
 import type { IPackageBackend } from "./backend.ts";
 
 /**
@@ -27,76 +27,11 @@ export class BackendRegistry {
     return backend;
   }
 
-  // ── Required methods ───────────────────────────────────────────────────
-
-  listInstalled(backend: PackageBackend): AnyPackage[] {
-    return this.get(backend).listInstalled();
-  }
-
-  listUpdates(backend: PackageBackend): PackageUpdate[] {
-    return this.get(backend).listUpdates();
-  }
-
-  listAllInstalled(): AnyPackage[] {
-    return Array.from(this.backends.values()).flatMap((b) => b.listInstalled());
-  }
-
-  listAllUpdates(): PackageUpdate[] {
-    return Array.from(this.backends.values()).flatMap((b) => b.listUpdates());
-  }
-
-  // ── Optional methods ───────────────────────────────────────────────────
-
-  search(backend: PackageBackend, query: string): AnyPackage[] {
-    const b = this.get(backend);
-    if (typeof b.search !== "function") return [];
-    return b.search(query);
-  }
-
-  searchAll(query: string): AnyPackage[] {
-    return Array.from(this.backends.values()).flatMap((b) =>
-      typeof b.search === "function" ? b.search(query) : [],
-    );
-  }
-
-  getPackage(backend: PackageBackend, id: string): AnyPackage | null {
-    const b = this.get(backend);
-    if (typeof b.getPackage !== "function") return null;
-    return b.getPackage(id);
-  }
-
   listAvailable(backend: PackageBackend): AnyPackage[] {
-    const b = this.get(backend);
-    if (typeof b.listAvailable !== "function") return [];
-    return b.listAvailable();
+    return this.get(backend).listAvailable();
   }
 
   listAllAvailable(): AnyPackage[] {
-    return Array.from(this.backends.values()).flatMap((b) =>
-      typeof b.listAvailable === "function" ? b.listAvailable() : [],
-    );
-  }
-
-  listByCategory(backend: PackageBackend, category: string): AnyPackage[] {
-    const b = this.get(backend);
-    if (typeof b.listByCategory !== "function") return [];
-    return b.listByCategory(category);
-  }
-
-  listAllByCategory(category: string): AnyPackage[] {
-    return Array.from(this.backends.values()).flatMap((b) =>
-      typeof b.listByCategory === "function" ? b.listByCategory(category) : [],
-    );
-  }
-
-  refreshMetadata(backend: PackageBackend): void {
-    const b = this.get(backend);
-    if (typeof b.refreshMetadata === "function") b.refreshMetadata();
-  }
-
-  refreshAllMetadata(): void {
-    for (const b of Array.from(this.backends.values())) {
-      if (typeof b.refreshMetadata === "function") b.refreshMetadata();
-    }
+    return Array.from(this.backends.values()).flatMap((b) => b.listAvailable());
   }
 }

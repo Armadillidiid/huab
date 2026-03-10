@@ -12,37 +12,7 @@ export class Manager implements ManagerIface {
     this.dbus = Gio.DBusExportedObject.wrapJSObject(MANAGER_IFACE_XML, this);
   }
 
-  // ── Required ─────────────────────────────────────────────────────────────
-
-  ListInstalled(backend: string): string {
-    return JSON.stringify(this.registry.listInstalled(parseBackend(backend)));
-  }
-
-  ListUpdates(backend: string): string {
-    return JSON.stringify(this.registry.listUpdates(parseBackend(backend)));
-  }
-
-  ListAllInstalled(): string {
-    return JSON.stringify(this.registry.listAllInstalled());
-  }
-
-  ListAllUpdates(): string {
-    return JSON.stringify(this.registry.listAllUpdates());
-  }
-
-  // ── Optional ─────────────────────────────────────────────────────────────
-
-  Search(backend: string, query: string): string {
-    return JSON.stringify(this.registry.search(parseBackend(backend), query));
-  }
-
-  SearchAll(query: string): string {
-    return JSON.stringify(this.registry.searchAll(query));
-  }
-
-  GetPackage(backend: string, id: string): string {
-    return JSON.stringify(this.registry.getPackage(parseBackend(backend), id));
-  }
+  // ── Query ─────────────────────────────────────────────────────────────────
 
   ListAvailable(backend: string): string {
     return JSON.stringify(this.registry.listAvailable(parseBackend(backend)));
@@ -52,19 +22,23 @@ export class Manager implements ManagerIface {
     return JSON.stringify(this.registry.listAllAvailable());
   }
 
-  ListByCategory(backend: string, category: string): string {
-    return JSON.stringify(this.registry.listByCategory(parseBackend(backend), category));
+  // ── Mutations ─────────────────────────────────────────────────────────────
+  // TODO: Implement Manager/Transaction paradigm — each mutation should spawn a
+  // transaction D-Bus object that the client subscribes to for progress signals.
+
+  Install(_backend: string, _packageId: string): void {
+    throw new Error("Install: not implemented (pending transaction model)");
   }
 
-  ListAllByCategory(category: string): string {
-    return JSON.stringify(this.registry.listAllByCategory(category));
+  Remove(_backend: string, _packageId: string): void {
+    throw new Error("Remove: not implemented (pending transaction model)");
   }
 
-  RefreshMetadata(backend: string): void {
-    this.registry.refreshMetadata(parseBackend(backend));
+  Update(_backend: string, _packageId: string): void {
+    throw new Error("Update: not implemented (pending transaction model)");
   }
 
-  RefreshAllMetadata(): void {
-    this.registry.refreshAllMetadata();
+  UpdateBatch(_backend: string, _packageIds: string[]): void {
+    throw new Error("UpdateBatch: not implemented (pending transaction model)");
   }
 }
