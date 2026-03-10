@@ -49,6 +49,7 @@ export class FlatpakBackend implements IPackageBackend {
           for (const r of inst.list_remote_refs_sync(remoteName, null)) {
             if (r.get_kind() !== Flatpak.RefKind.APP) continue;
             const pkg = FlatpakPackage.from(r, this.appstream);
+            // TODO: Craate a class to group the same ref from different remotes and installations, instead of just skipping duplicates. 
             if (!seenRemote.has(pkg.id) && !installedById.has(pkg.id)) {
               seenRemote.add(pkg.id);
               remoteResults.push(pkg);
