@@ -1,4 +1,4 @@
-import { cmd } from "@/utils";
+import { cmd } from "../utils";
 
 export const TuiCommand = cmd({
   command: "$0",

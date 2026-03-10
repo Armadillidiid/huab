@@ -1,4 +1,4 @@
-import { router } from "@/contract";
+import { router } from "../src/contract";
 import { OpenAPIGenerator } from "@orpc/openapi";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 
