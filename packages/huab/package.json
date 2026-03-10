@@ -34,8 +34,8 @@
   },
   "dependencies": {
     "@huab/lib": "workspace:*",
-    "@opentui/core": "^0.1.80",
-    "@opentui/react": "^0.1.80",
+    "@opentui/core": "^0.1.87",
+    "@opentui/react": "^0.1.87",
     "@orpc/contract": "^1.13.5",
     "@orpc/openapi": "^1.13.5",
     "@orpc/zod": "^1.13.5",
