@@ -74,7 +74,9 @@ export type AppStreamPackage = z.infer<typeof AppStreamPackageSchema>;
 // plus all shared rich fields and Flatpak-specific libflatpak fields.
 // ---------------------------------------------------------------------------
 
-export const FlatpakPackageSchema = PackageSchema.merge(AppStreamPackageSchema).extend({
+export const FlatpakPackageSchema = PackageSchema.merge(
+  AppStreamPackageSchema,
+).extend({
   backend: z.literal("flatpak"),
   /** Currently installed version (null if not installed) */
   installed_version: z.string().nullable(),
@@ -134,7 +136,9 @@ export type AlpmPackage = z.infer<typeof AlpmPackageSchema>;
 // AUR - extends Alpm with AUR-specific metadata
 // ---------------------------------------------------------------------------
 
-export const AURPackageSchema = AlpmPackageSchema.omit({ backend: true }).extend({
+export const AURPackageSchema = AlpmPackageSchema.omit({
+  backend: true,
+}).extend({
   backend: z.literal("aur"),
   packagebase: z.string().nullable(),
   maintainer: z.string().nullable(),

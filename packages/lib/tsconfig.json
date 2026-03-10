@@ -9,7 +9,8 @@
       "@girs/gjs",
       "@girs/glib-2.0",
       "@girs/glibunix-2.0",
-      "@girs/flatpak-1.0"
+      "@girs/flatpak-1.0",
+      "@girs/appstream-1.0",
     ],
     "noUncheckedIndexedAccess": false,
     "resolveJsonModule": true,
