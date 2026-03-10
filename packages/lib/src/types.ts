@@ -1,116 +1,191 @@
-import type { KNOWN_BACKENDS } from "./constants";
+import { z } from "zod";
+import { KNOWN_BACKENDS } from "./constants.ts";
 
-export type PackageBackend = (typeof KNOWN_BACKENDS)[number];
+// ---------------------------------------------------------------------------
+// Backend discriminant
+// ---------------------------------------------------------------------------
 
-/**
- * Base package interface - fields present on ALL backends.
- * All values are JSON-serializable: no bigint, no Date.
- */
-export interface Package {
-  /** Backend-specific identifier, e.g. Flatpak ref "app/org.mozilla.Firefox/x86_64/stable" */
-  id: string;
+export const PackageBackendSchema = z.enum(
+  KNOWN_BACKENDS as [
+    (typeof KNOWN_BACKENDS)[number],
+    ...(typeof KNOWN_BACKENDS)[number][],
+  ],
+);
+
+export type PackageBackend = z.infer<typeof PackageBackendSchema>;
+
+// ---------------------------------------------------------------------------
+// Base package schema - minimal discriminant-only fields present on ALL backends.
+// All values are JSON-serializable: no bigint, no Date.
+// ---------------------------------------------------------------------------
+
+export const PackageSchema = z.object({
+  /** Backend-specific identifier */
+  id: z.string(),
   /** Human-readable name, e.g. "Firefox" */
-  name: string;
+  name: z.string(),
   /** Available/latest version string */
-  version: string;
-  /**
-   * Currently installed version (null if not installed)
-   * If `installed_version` !== `version`, then an update is available
-   */
-  installed_version: string | null;
-  /** Short one-line description */
-  desc: string | null;
-  /** Long description (from AppStream metadata) */
-  long_desc: string | null;
-  /** Repository/remote origin, e.g. "flathub", "core", "AUR" */
-  repo: string | null;
-  /** License string */
-  license: string | null;
-  /** Homepage URL */
-  url: string | null;
-  /** Human-friendly app name from AppStream */
-  app_name: string | null;
-  /** AppStream app ID, e.g. "org.mozilla.Firefox" */
-  app_id: string | null;
+  version: z.string(),
+  backend: PackageBackendSchema,
+});
+
+export type Package = z.infer<typeof PackageSchema>;
+
+// ---------------------------------------------------------------------------
+// AppStream mixin - fields sourced from AppStream metadata.
+// Only backends that consume AppStream data should extend this.
+// ---------------------------------------------------------------------------
+
+export const AppStreamPackageSchema = z.object({
+  /** Short one-line summary (as_component_get_summary) */
+  desc: z.string().nullable(),
+  /** Full HTML/Markdown description (as_component_get_description) */
+  long_desc: z.string().nullable(),
+  /** Homepage URL (as_component_get_url, homepage) */
+  url: z.string().nullable(),
+  /** Human-friendly app name from AppStream (as_component_get_name) */
+  app_name: z.string().nullable(),
+  /** AppStream app ID, e.g. "org.mozilla.Firefox" (as_component_get_id) */
+  app_id: z.string().nullable(),
   /** Desktop file path for launching the app */
-  launchable: string | null;
+  launchable: z.string().nullable(),
   /** Icon path or name */
-  icon: string | null;
+  icon: z.string().nullable(),
   /** Screenshot URLs */
-  screenshots: string[];
+  screenshots: z.array(z.string()),
+  /** License string (as_component_get_project_license) */
+  license: z.string().nullable(),
+  /** AppStream keywords (as_component_get_search_tokens) */
+  keywords: z.array(z.string()),
+  /** AppStream categories, e.g. ["Graphics", "Utility"] */
+  categories: z.array(z.string()),
+  /** Human-readable developer or author name (as_component_get_developer) */
+  developer: z.string().nullable(),
+  /** Donation URL from AppStream metadata */
+  donation_url: z.string().nullable(),
+  /** Whether the app is Free/Libre Open Source Software (as_component_is_floss) */
+  is_floss: z.boolean(),
+});
+
+export type AppStreamPackage = z.infer<typeof AppStreamPackageSchema>;
+
+// ---------------------------------------------------------------------------
+// Flatpak - extends both base Package and the AppStream mixin,
+// plus all shared rich fields and Flatpak-specific libflatpak fields.
+// ---------------------------------------------------------------------------
+
+export const FlatpakPackageSchema = PackageSchema.merge(AppStreamPackageSchema).extend({
+  backend: z.literal("flatpak"),
+  /** Currently installed version (null if not installed) */
+  installed_version: z.string().nullable(),
+  /** Repository/remote origin, e.g. "flathub" */
+  repo: z.string().nullable(),
   /** Installed size in bytes */
-  installed_size: number;
+  installed_size: z.number(),
   /** Download size in bytes */
-  download_size: number;
+  download_size: z.number(),
   /** ISO-8601 install date (null if not installed) */
-  install_date: string | null;
-  backend: PackageBackend;
-}
+  install_date: z.string().nullable(),
+  /** CPU architecture, e.g. "x86_64" (flatpak_ref_get_arch) */
+  arch: z.string(),
+  /** Branch/channel, e.g. "stable" (flatpak_ref_get_branch) */
+  branch: z.string(),
+  /** Full formatted ref string (flatpak_ref_format_ref) */
+  ref: z.string(),
+  /** Runtime from metadata key file Application group (null if unavailable) */
+  runtime: z.string().nullable(),
+  /** Launch command from metadata key file Application group (null if unavailable) */
+  command: z.string().nullable(),
+  /** End-of-life message (null if not EOL) */
+  eol: z.string().nullable(),
+});
 
-/** Flatpak package - no extra fields beyond base; AppStream provides all metadata. */
-export interface FlatpakPackage extends Package {
-  backend: "flatpak";
-}
+export type FlatpakPackage = z.infer<typeof FlatpakPackageSchema>;
 
-/** Native Arch/Manjaro package (alpm = Arch Linux Package Management). */
-export interface AlpmPackage extends Package {
-  backend: "alpm";
+// ---------------------------------------------------------------------------
+// Alpm (Arch/Manjaro native packages)
+// ---------------------------------------------------------------------------
+
+export const AlpmPackageSchema = PackageSchema.extend({
+  backend: z.literal("alpm"),
   /** ISO-8601 build date */
-  build_date: string | null;
+  build_date: z.string().nullable(),
   /** Who packaged it */
-  packager: string | null;
+  packager: z.string().nullable(),
   /** "explicit" | "dependency" */
-  reason: string | null;
-  groups: string[];
-  depends: string[];
-  optdepends: string[];
-  makedepends: string[];
-  checkdepends: string[];
-  requiredby: string[];
-  optionalfor: string[];
-  provides: string[];
-  replaces: string[];
-  conflicts: string[];
+  reason: z.string().nullable(),
+  groups: z.array(z.string()),
+  depends: z.array(z.string()),
+  optdepends: z.array(z.string()),
+  makedepends: z.array(z.string()),
+  checkdepends: z.array(z.string()),
+  requiredby: z.array(z.string()),
+  optionalfor: z.array(z.string()),
+  provides: z.array(z.string()),
+  replaces: z.array(z.string()),
+  conflicts: z.array(z.string()),
   /** e.g. ["MD5 Sum", "SHA-256 Sum", "Signature"] */
-  validations: string[];
-}
+  validations: z.array(z.string()),
+});
 
-/** AUR package - extends AlpmPackage with AUR-specific metadata. */
-export interface AURPackage extends Omit<AlpmPackage, "backend"> {
-  backend: "aur";
-  packagebase: string | null;
-  maintainer: string | null;
-  popularity: number;
+export type AlpmPackage = z.infer<typeof AlpmPackageSchema>;
+
+// ---------------------------------------------------------------------------
+// AUR - extends Alpm with AUR-specific metadata
+// ---------------------------------------------------------------------------
+
+export const AURPackageSchema = AlpmPackageSchema.omit({ backend: true }).extend({
+  backend: z.literal("aur"),
+  packagebase: z.string().nullable(),
+  maintainer: z.string().nullable(),
+  popularity: z.number(),
   /** ISO-8601 last modified date */
-  lastmodified: string | null;
+  lastmodified: z.string().nullable(),
   /** ISO-8601 flagged out-of-date date (null if current) */
-  outofdate: string | null;
+  outofdate: z.string().nullable(),
   /** ISO-8601 first submitted date */
-  firstsubmitted: string | null;
-  numvotes: number;
-}
+  firstsubmitted: z.string().nullable(),
+  numvotes: z.number(),
+});
 
-/** Snap package. */
-export interface SnapPackage extends Package {
-  backend: "snap";
+export type AURPackage = z.infer<typeof AURPackageSchema>;
+
+// ---------------------------------------------------------------------------
+// Snap
+// ---------------------------------------------------------------------------
+
+export const SnapPackageSchema = PackageSchema.extend({
+  backend: z.literal("snap"),
   /** Current channel, e.g. "stable", "edge" */
-  channel: string | null;
-  publisher: string | null;
+  channel: z.string().nullable(),
+  publisher: z.string().nullable(),
   /** Confinement status: "strict" | "classic" | "devmode" */
-  confined: string | null;
+  confined: z.string().nullable(),
   /** Available channels */
-  channels: string[];
-}
+  channels: z.array(z.string()),
+});
 
-/** Discriminated union of all concrete package types. */
-export type AnyPackage =
-  | FlatpakPackage
-  | AlpmPackage
-  | AURPackage
-  | SnapPackage;
+export type SnapPackage = z.infer<typeof SnapPackageSchema>;
+
+// ---------------------------------------------------------------------------
+// Discriminated union of all concrete package types
+// ---------------------------------------------------------------------------
+
+export const AnyPackageSchema = z.discriminatedUnion("backend", [
+  FlatpakPackageSchema,
+  AlpmPackageSchema,
+  AURPackageSchema,
+  SnapPackageSchema,
+]);
+
+export type AnyPackage = z.infer<typeof AnyPackageSchema>;
+
+// ---------------------------------------------------------------------------
+// Utility types
+// ---------------------------------------------------------------------------
 
 /**
- * Convert D-Bus interfaces to async/Promise-based ones.
+ * Convert a D-Bus interface to async/Promise-based equivalent.
  */
 export type Promisify<T> = {
   [K in keyof T]: T[K] extends (...args: infer A) => infer R

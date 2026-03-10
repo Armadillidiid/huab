@@ -14,25 +14,39 @@ function refsFromInst(inst: Flatpak.Installation): FlatpakPackage[] {
         const appName = appId.split(".").at(-1) ?? appId;
         const origin = r.get_origin() || null;
         const version = r.get_appdata_version() || "unknown";
+        const arch = r.get_arch() ?? "";
+        const branch = r.get_branch() ?? "";
         return {
-          id: `app/${appId}/${r.get_arch()}/${r.get_branch()}`,
+          id: `app/${appId}/${arch}/${branch}`,
           name: appName,
           version,
           installed_version: version,
+          repo: origin,
+          installed_size: r.get_installed_size(),
+          download_size: 0,
+          install_date: null,
+          backend: BACKENDS.flatpak,
+          arch,
+          branch,
+          ref: `app/${appId}/${arch}/${branch}`,
+          runtime: null,
+          command: null,
+          eol: r.get_eol() || null,
+          // AppStream fields - populated later via AppStream metadata
           desc: null,
           long_desc: null,
-          repo: origin,
-          license: null,
           url: null,
           app_name: appName,
           app_id: appId,
           launchable: null,
           icon: null,
           screenshots: [],
-          installed_size: r.get_installed_size(),
-          download_size: 0,
-          install_date: null,
-          backend: BACKENDS.flatpak,
+          license: null,
+          keywords: [],
+          categories: [],
+          developer: null,
+          donation_url: null,
+          is_floss: false,
         };
       });
   } catch (e) {
@@ -55,25 +69,39 @@ function remoteRefsFromInst(
       .map((r) => {
         const appId = r.get_name();
         const appName = appId.split(".").at(-1) ?? appId;
+        const arch = r.get_arch() ?? "";
+        const branch = r.get_branch() ?? "";
         return {
-          id: `app/${appId}/${r.get_arch()}/${r.get_branch()}`,
+          id: `app/${appId}/${arch}/${branch}`,
           name: appName,
           version: "unknown",
           installed_version: null,
+          repo: remote,
+          installed_size: 0,
+          download_size: 0,
+          install_date: null,
+          backend: BACKENDS.flatpak,
+          arch,
+          branch,
+          ref: `app/${appId}/${arch}/${branch}`,
+          runtime: null,
+          command: null,
+          eol: r.get_eol() || null,
+          // AppStream fields - populated later via AppStream metadata
           desc: null,
           long_desc: null,
-          repo: remote,
-          license: null,
           url: null,
           app_name: appName,
           app_id: appId,
           launchable: null,
           icon: null,
           screenshots: [],
-          installed_size: 0,
-          download_size: 0,
-          install_date: null,
-          backend: BACKENDS.flatpak,
+          license: null,
+          keywords: [],
+          categories: [],
+          developer: null,
+          donation_url: null,
+          is_floss: false,
         };
       });
   } catch (e) {

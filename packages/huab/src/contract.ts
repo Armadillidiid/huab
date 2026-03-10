@@ -1,26 +1,14 @@
 import { oc } from "@orpc/contract";
 import { z } from "zod";
-
-export const PackageSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  version: z.string(),
-  installed_version: z.string().nullable(),
-  desc: z.string().nullable(),
-  repo: z.string().nullable(),
-  icon: z.string().nullable(),
-  backend: z.enum(["flatpak", "snap", "alpm", "aur"]),
-});
+import { AnyPackageSchema } from "@huab/lib";
 
 const flatpakListAvailable = oc
   .route({ method: "GET", path: "/flatpak/packages" })
-  .output(z.array(PackageSchema));
+  .output(z.array(AnyPackageSchema));
 
 const listAllAvailable = oc
   .route({ method: "GET", path: "/packages" })
-  .output(z.array(PackageSchema));
-
-// Router
+  .output(z.array(AnyPackageSchema));
 
 export const router = {
   flatpak: {
