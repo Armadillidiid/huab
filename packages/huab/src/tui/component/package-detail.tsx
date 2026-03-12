@@ -2,6 +2,7 @@ import type { FlatpakPackage } from "@huab/lib";
 
 interface PackageDetailProps {
   pkg: FlatpakPackage | null;
+  focused?: boolean;
 }
 
 function formatBytes(bytes: number): string {
@@ -25,7 +26,7 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function PackageDetail({ pkg }: PackageDetailProps) {
+export function PackageDetail({ pkg, focused = false }: PackageDetailProps) {
   if (!pkg) {
     return (
       <box
@@ -51,7 +52,7 @@ export function PackageDetail({ pkg }: PackageDetailProps) {
       flexDirection="column"
       border
       borderStyle="rounded"
-      borderColor="#7aa2f7"
+      borderColor={focused ? "#7aa2f7" : "#2a2a4e"}
       title={` ${displayName} `}
       padding={1}
       gap={1}
@@ -67,20 +68,14 @@ export function PackageDetail({ pkg }: PackageDetailProps) {
       <box flexDirection="column" gap={0}>
         <Row label="ID" value={pkg.id} />
         <Row label="Version" value={pkg.version} />
-        {isInstalled && (
-          <Row label="Installed" value={pkg.installed_version!} />
-        )}
+        {isInstalled && <Row label="Installed" value={pkg.installed_version!} />}
         <Row label="Branch" value={pkg.branch} />
         <Row label="Arch" value={pkg.arch} />
         {pkg.repo && <Row label="Remote" value={pkg.repo} />}
         {pkg.developer && <Row label="Developer" value={pkg.developer} />}
         {pkg.license && <Row label="License" value={pkg.license} />}
-        {pkg.download_size > 0 && (
-          <Row label="Download" value={formatBytes(pkg.download_size)} />
-        )}
-        {pkg.installed_size > 0 && (
-          <Row label="Size" value={formatBytes(pkg.installed_size)} />
-        )}
+        {pkg.download_size > 0 && <Row label="Download" value={formatBytes(pkg.download_size)} />}
+        {pkg.installed_size > 0 && <Row label="Size" value={formatBytes(pkg.installed_size)} />}
       </box>
 
       {/* Status badges */}

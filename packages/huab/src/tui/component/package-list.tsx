@@ -6,7 +6,6 @@ interface PackageListProps {
   focused: boolean;
   onNavigate: (index: number) => void;
   onSelect: (pkg: FlatpakPackage) => void;
-  searchQuery: string;
 }
 
 export function PackageList({
@@ -15,19 +14,7 @@ export function PackageList({
   focused,
   onNavigate,
   onSelect,
-  searchQuery,
 }: PackageListProps) {
-  const filtered = packages.filter((pkg) => {
-    if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      pkg.name.toLowerCase().includes(q) ||
-      (pkg.app_name?.toLowerCase().includes(q) ?? false) ||
-      (pkg.summary?.toLowerCase().includes(q) ?? false) ||
-      pkg.id.toLowerCase().includes(q)
-    );
-  });
-
   return (
     <scrollbox
       focused={focused}
@@ -42,12 +29,12 @@ export function PackageList({
         },
       }}
     >
-      {filtered.length === 0 ? (
+      {packages.length === 0 ? (
         <box paddingX={2} paddingY={1}>
           <text fg="#666666">No packages found</text>
         </box>
       ) : (
-        filtered.map((pkg, i) => {
+        packages.map((pkg, i) => {
           const isSelected = i === selectedIndex;
           const displayName = pkg.app_name ?? pkg.name;
           const subtitle = pkg.summary ?? pkg.id;
@@ -66,19 +53,13 @@ export function PackageList({
               }}
             >
               <text fg={isSelected ? "#7aa2f7" : "#cccccc"} width={30}>
-                {displayName.length > 28
-                  ? displayName.slice(0, 27) + "…"
-                  : displayName}
+                {displayName.length > 28 ? displayName.slice(0, 27) + "…" : displayName}
               </text>
               <text fg={isSelected ? "#a9b1d6" : "#666666"} flexGrow={1}>
-                {subtitle && subtitle.length > 50
-                  ? subtitle.slice(0, 49) + "…"
-                  : (subtitle ?? "")}
+                {subtitle && subtitle.length > 50 ? subtitle.slice(0, 49) + "…" : subtitle}
               </text>
               <text fg="#444">
-                {pkg.version.length > 12
-                  ? pkg.version.slice(0, 11) + "…"
-                  : pkg.version}
+                {pkg.version.length > 12 ? pkg.version.slice(0, 11) + "…" : pkg.version}
               </text>
             </box>
           );
