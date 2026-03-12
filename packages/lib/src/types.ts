@@ -74,6 +74,7 @@ export type AppStreamPackage = z.infer<typeof AppStreamPackageSchema>;
 // plus all shared rich fields and Flatpak-specific libflatpak fields.
 // ---------------------------------------------------------------------------
 
+// TODO: stuff appstream schema under "appstream" key as not all packages will have it.
 export const FlatpakPackageSchema = PackageSchema.extend(
   AppStreamPackageSchema.shape,
 ).extend({
