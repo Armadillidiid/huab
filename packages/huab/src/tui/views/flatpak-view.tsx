@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useKeyboard } from "@opentui/react";
 import type { KeyEvent } from "@opentui/core";
 import type { FlatpakPackage } from "@huab/lib";
@@ -18,7 +18,10 @@ interface FlatpakViewProps {
   error: string | null;
 }
 
-function filterPackages(packages: FlatpakPackage[], query: string): FlatpakPackage[] {
+function filterPackages(
+  packages: FlatpakPackage[],
+  query: string,
+): FlatpakPackage[] {
   if (!query) return packages;
   const q = query.toLowerCase();
   return packages.filter(
@@ -43,31 +46,9 @@ export function FlatpakView({ packages, loading, error }: FlatpakViewProps) {
 
   const selectedPkg = filteredPackages[selectedIndex] ?? null;
 
-  const moveUp = useCallback(() => {
-    setSelectedIndex((i) => Math.max(0, i - 1));
-  }, []);
-
-  const moveDown = useCallback(() => {
-    setSelectedIndex((i) => Math.min(filteredPackages.length - 1, i + 1));
-  }, [filteredPackages.length]);
-
-  const handleSearch = useCallback((value: string) => {
-    setSearchQuery(value);
-    setSelectedIndex(0);
-  }, []);
-
   useKeyboard((key) => {
     // Let the reducer handle scope transitions (tab, escape, enter, /)
     dispatch(key);
-
-    // Handle navigation within the list scope
-    if (scope === "list") {
-      if (key.name === "up" || key.name === "k") {
-        moveUp();
-      } else if (key.name === "down" || key.name === "j") {
-        moveDown();
-      }
-    }
 
     // Clear search query when escaping from search scope
     if (key.name === "escape" && scope === "search") {
@@ -84,7 +65,14 @@ export function FlatpakView({ packages, loading, error }: FlatpakViewProps) {
   return (
     <box flexDirection="column" flexGrow={1}>
       {/* Search bar */}
-      <SearchBar value={searchQuery} focused={scope === "search"} onInput={handleSearch} />
+      <SearchBar
+        value={searchQuery}
+        focused={scope === "search"}
+        onInput={(value) => {
+          setSearchQuery(value);
+          setSelectedIndex(0);
+        }}
+      />
 
       {/* Count line */}
       <box paddingX={2} height={1}>
