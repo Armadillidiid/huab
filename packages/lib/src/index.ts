@@ -1,5 +1,5 @@
 export { HuabClient } from "./client/client.ts";
-export { BACKENDS } from "./constants.ts";
+export { BACKENDS, KNOWN_BACKENDS } from "./constants.ts";
 export {
   PackageBackendSchema,
   PackageSchema,
