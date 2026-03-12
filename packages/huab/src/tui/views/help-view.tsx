@@ -1,4 +1,4 @@
-export const HelpView = (props: Props) => {
+export const HelpView = () => {
   return (
     <box
       flexGrow={1}

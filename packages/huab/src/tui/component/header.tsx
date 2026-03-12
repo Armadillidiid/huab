@@ -1,9 +1,15 @@
+import { Spinner } from "./spinner.tsx";
+
 interface HeaderProps {
   title: string;
   loading?: boolean;
+  error?: string | null;
 }
 
-export function Header({ title, loading }: HeaderProps) {
+export function Header({ title, loading, error }: HeaderProps) {
+  const spinnerState = loading ? "spinning" : error != null ? "error" : "success";
+  const spinnerColor = loading ? "#7aa2f7" : error != null ? "#f7768e" : "#9ece6a";
+
   return (
     <box
       flexDirection="row"
@@ -20,7 +26,9 @@ export function Header({ title, loading }: HeaderProps) {
         <strong>{title}</strong>
       </text>
       <box flexGrow={1} />
-      {loading && <text fg="#444444">fetching…</text>}
+      <text fg={spinnerColor}>
+        <Spinner state={spinnerState} />
+      </text>
     </box>
   );
 }

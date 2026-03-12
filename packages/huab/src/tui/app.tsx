@@ -17,9 +17,7 @@ function App() {
   const [packages, setPackages] = useState<FlatpakPackage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeBackend, setActiveBackend] = useState<PackageBackendKey>(
-    BACKENDS.flatpak,
-  );
+  const [activeBackend, setActiveBackend] = useState<PackageBackendKey>(BACKENDS.flatpak);
   const [showHelp, setShowHelp] = useState(false);
 
   // Fetch Flatpak packages on mount
@@ -66,7 +64,7 @@ function App() {
           borderColor="#2a2a4e"
           backgroundColor="#1a1a2e"
         >
-          <Header title="huab" loading={loading} />
+          <Header title="huab" loading={loading} error={error} />
           <box flexGrow={1} />
           <BackendTabs
             backends={backendsArray}

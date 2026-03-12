@@ -1,10 +1,16 @@
 import { useCallback, useMemo, useState } from "react";
 import { useKeyboard } from "@opentui/react";
+import type { KeyEvent } from "@opentui/core";
 import type { FlatpakPackage } from "@huab/lib";
 import { PackageList } from "../component/package-list.tsx";
 import { PackageDetail } from "../component/package-detail.tsx";
 import { SearchBar } from "../component/search-bar.tsx";
-import { useKeyboardScope } from "../context/keyboard.tsx";
+import { useKeyboardState } from "../context/keyboard.tsx";
+
+/** Synthesize a minimal KeyEvent-shaped object for dispatching scope transitions. */
+function syntheticKey(name: string): KeyEvent {
+  return { name } as KeyEvent;
+}
 
 interface FlatpakViewProps {
   packages: FlatpakPackage[];
@@ -25,7 +31,7 @@ function filterPackages(packages: FlatpakPackage[], query: string): FlatpakPacka
 }
 
 export function FlatpakView({ packages, loading, error }: FlatpakViewProps) {
-  const [scope, setScope] = useKeyboardScope();
+  const [{ scope }, dispatch] = useKeyboardState();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -51,31 +57,21 @@ export function FlatpakView({ packages, loading, error }: FlatpakViewProps) {
   }, []);
 
   useKeyboard((key) => {
-    if (key.name === "tab") {
-      setScope(scope === "search" ? "list" : scope === "list" ? "detail" : "search");
-      return;
-    }
+    // Let the reducer handle scope transitions (tab, escape, enter, /)
+    dispatch(key);
 
-    if (key.name === "escape") {
-      if (scope === "search") {
-        setSearchQuery("");
-        setScope("list");
-      } else {
-        setScope("list");
-      }
-      return;
-    }
-
+    // Handle navigation within the list scope
     if (scope === "list") {
       if (key.name === "up" || key.name === "k") {
         moveUp();
       } else if (key.name === "down" || key.name === "j") {
         moveDown();
-      } else if (key.name === "enter") {
-        setScope("detail");
-      } else if (key.name === "/") {
-        setScope("search");
       }
+    }
+
+    // Clear search query when escaping from search scope
+    if (key.name === "escape" && scope === "search") {
+      setSearchQuery("");
     }
   });
 
@@ -117,7 +113,7 @@ export function FlatpakView({ packages, loading, error }: FlatpakViewProps) {
               selectedIndex={selectedIndex}
               focused={scope === "list"}
               onNavigate={setSelectedIndex}
-              onSelect={() => setScope("detail")}
+              onSelect={() => dispatch(syntheticKey("enter"))}
             />
           )}
         </box>
