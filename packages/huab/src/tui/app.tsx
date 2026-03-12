@@ -54,7 +54,7 @@ function App() {
   // Update selected pkg when index or filtered list changes
   useEffect(() => {
     setSelectedPkg(filtered[selectedIndex] ?? null);
-  }, [selectedIndex, searchQuery, packages]);
+  }, [filtered, selectedIndex]);
 
   const moveUp = useCallback(() => {
     setSelectedIndex((i) => Math.max(0, i - 1));
@@ -142,7 +142,7 @@ function App() {
         <text fg="#666666">/</text>
         <input
           value={searchQuery}
-          onChange={(v) => {
+          onInput={(v) => {
             setSearchQuery(v);
             setSelectedIndex(0);
           }}
