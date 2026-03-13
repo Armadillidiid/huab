@@ -50,9 +50,7 @@ const PackageRow = memo(function PackageRow({
         {displayName.length > 28 ? displayName.slice(0, 27) + "…" : displayName}
       </text>
       <text fg={isSelected ? "#a9b1d6" : "#666666"} flexGrow={1}>
-        {subtitle && subtitle.length > 50
-          ? subtitle.slice(0, 49) + "…"
-          : subtitle}
+        {subtitle && subtitle.length > 50 ? subtitle.slice(0, 49) + "…" : subtitle}
       </text>
       <text fg="#444">
         {pkg.version.length > 12 ? pkg.version.slice(0, 11) + "…" : pkg.version}
@@ -60,18 +58,6 @@ const PackageRow = memo(function PackageRow({
     </box>
   );
 });
-
-/** Scroll the minimum amount needed to bring `index` into view. No-op if already visible. */
-function scrollIntoView(sb: ScrollBoxRenderable, index: number) {
-  if (index < 0) return;
-  const vh = sb.viewport.height;
-  const top = sb.scrollTop;
-  if (index < top) {
-    sb.scrollTo(index);
-  } else if (index >= top + vh) {
-    sb.scrollTo(index - vh + 1);
-  }
-}
 
 export function PackageList({
   packages,
@@ -109,7 +95,6 @@ export function PackageList({
     if (packages.length === 0) return;
 
     virtualizer.scrollToIndex(selectedIndex, { align: "auto", behavior: "auto" });
-    scrollIntoView(sb, selectedIndex);
   }, [packages.length, selectedIndex, virtualizer]);
 
   useKeyboard((key) => {
