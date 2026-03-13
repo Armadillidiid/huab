@@ -50,7 +50,7 @@ function getSpacers(virtualItems: VirtualItem[], totalSize: number) {
 
 interface UseOpenTuiVirtualizerOptions {
   count: number;
-  estimateSize?: () => number;
+  estimateSize?: (index: number) => number;
   overscan?: number;
   getItemKey?: (index: number) => number | string;
 }
@@ -61,14 +61,19 @@ export function useOpenTuiVirtualizer(
 ) {
   const estimateSizeFn = estimateSize ?? defaultEstimateSize;
   const scrollElementRef = useRef<FakeScrollElement | null>(null);
+  const estimateSizeRef = useRef(estimateSizeFn);
+  const getItemKeyRef = useRef(getItemKey);
   const [, rerender] = useReducer((x: number) => x + 1, 0);
+
+  estimateSizeRef.current = estimateSizeFn;
+  getItemKeyRef.current = getItemKey;
 
   const virtualizer = useMemo(() => {
     return new Virtualizer<Element, Element>({
       count,
-      estimateSize: estimateSizeFn,
+      estimateSize: (index) => estimateSizeRef.current(index),
       overscan,
-      getItemKey,
+      getItemKey: (index) => getItemKeyRef.current?.(index) ?? index,
       getScrollElement: () => {
         if (!scrollRef.current) return null;
         if (!scrollElementRef.current) {
@@ -110,15 +115,15 @@ export function useOpenTuiVirtualizer(
       },
       onChange: () => rerender(),
     });
-  }, [count, estimateSizeFn, getItemKey, overscan, scrollRef]);
+  }, [scrollRef]);
 
   useEffect(() => {
     virtualizer.setOptions({
       ...virtualizer.options,
       count,
-      estimateSize: estimateSizeFn,
+      estimateSize: (index) => estimateSizeRef.current(index),
       overscan,
-      getItemKey,
+      getItemKey: (index) => getItemKeyRef.current?.(index) ?? index,
     });
     virtualizer._willUpdate();
   }, [count, estimateSizeFn, getItemKey, overscan, virtualizer]);
