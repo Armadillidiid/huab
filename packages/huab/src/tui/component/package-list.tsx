@@ -50,7 +50,9 @@ const PackageRow = memo(function PackageRow({
         {displayName.length > 28 ? displayName.slice(0, 27) + "…" : displayName}
       </text>
       <text fg={isSelected ? "#a9b1d6" : "#666666"} flexGrow={1}>
-        {subtitle && subtitle.length > 50 ? subtitle.slice(0, 49) + "…" : subtitle}
+        {subtitle && subtitle.length > 50
+          ? subtitle.slice(0, 49) + "…"
+          : subtitle}
       </text>
       <text fg="#444">
         {pkg.version.length > 12 ? pkg.version.slice(0, 11) + "…" : pkg.version}
@@ -180,6 +182,9 @@ export function PackageList({
         <box flexDirection="column">
           {paddingTop > 0 ? <box height={paddingTop} /> : null}
           {virtualItems.map((virtualRow) => {
+            if (virtualRow.index < 0 || virtualRow.index >= packages.length) {
+              return null;
+            }
             const pkg = packages[virtualRow.index];
             return (
               <PackageRow
