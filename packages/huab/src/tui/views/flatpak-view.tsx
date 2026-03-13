@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useKeyboard } from "@opentui/react";
 import type { KeyEvent } from "@opentui/core";
 import type { FlatpakPackage } from "@huab/lib";
@@ -18,10 +18,7 @@ interface FlatpakViewProps {
   error: string | null;
 }
 
-function filterPackages(
-  packages: FlatpakPackage[],
-  query: string,
-): FlatpakPackage[] {
+function filterPackages(packages: FlatpakPackage[], query: string): FlatpakPackage[] {
   if (!query) return packages;
   const q = query.toLowerCase();
   return packages.filter(
@@ -43,6 +40,14 @@ export function FlatpakView({ packages, loading, error }: FlatpakViewProps) {
     () => filterPackages(packages, searchQuery),
     [packages, searchQuery],
   );
+
+  useEffect(() => {
+    const max = filteredPackages.length - 1;
+    setSelectedIndex((current) => {
+      if (max < 0) return 0;
+      return Math.max(0, Math.min(max, current));
+    });
+  }, [filteredPackages.length]);
 
   const selectedPkg = filteredPackages[selectedIndex] ?? null;
 
