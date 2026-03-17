@@ -11,12 +11,19 @@ export interface KeyboardState {
 
 const initialState: KeyboardState = { scope: "list" };
 
-export function keyboardReducer(state: KeyboardState, action: KeyboardAction): KeyboardState {
-  const { name } = action;
+export function keyboardReducer(
+  state: KeyboardState,
+  action: KeyboardAction,
+): KeyboardState {
+  const { name, ctrl } = action;
 
   if (name === "tab") {
     const next: KeyboardScope =
-      state.scope === "search" ? "list" : state.scope === "list" ? "detail" : "search";
+      state.scope === "search"
+        ? "list"
+        : state.scope === "list"
+          ? "detail"
+          : "search";
     return { ...state, scope: next };
   }
 
@@ -26,7 +33,7 @@ export function keyboardReducer(state: KeyboardState, action: KeyboardAction): K
 
   if (state.scope === "list") {
     if (name === "enter") return { ...state, scope: "detail" };
-    if (name === "/") return { ...state, scope: "search" };
+    if (ctrl && name === "k") return { ...state, scope: "search" };
   }
 
   return state;
@@ -37,7 +44,9 @@ interface KeyboardContextValue {
   dispatch: React.Dispatch<KeyboardAction>;
 }
 
-const KeyboardContext = createContext<KeyboardContextValue | undefined>(undefined);
+const KeyboardContext = createContext<KeyboardContextValue | undefined>(
+  undefined,
+);
 
 interface KeyboardProviderProps {
   children: ReactNode;
@@ -47,13 +56,19 @@ export function KeyboardProvider({ children }: KeyboardProviderProps) {
   const [state, dispatch] = useReducer(keyboardReducer, initialState);
 
   return (
-    <KeyboardContext.Provider value={{ state, dispatch }}>{children}</KeyboardContext.Provider>
+    <KeyboardContext.Provider value={{ state, dispatch }}>
+      {children}
+    </KeyboardContext.Provider>
   );
 }
 
 /** Returns [state, dispatch] for the keyboard reducer. */
-export function useKeyboardState(): [KeyboardState, React.Dispatch<KeyboardAction>] {
+export function useKeyboardState(): [
+  KeyboardState,
+  React.Dispatch<KeyboardAction>,
+] {
   const ctx = useContext(KeyboardContext);
-  if (!ctx) throw new Error("useKeyboardState must be used within KeyboardProvider");
+  if (!ctx)
+    throw new Error("useKeyboardState must be used within KeyboardProvider");
   return [ctx.state, ctx.dispatch];
 }
