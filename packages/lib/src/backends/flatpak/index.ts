@@ -4,7 +4,7 @@ import type { IPackageBackend } from "../backend.ts";
 import { FlatpakPackage } from "./utils.ts";
 import { AppStreamStore } from "./appstream-store.ts";
 
-export class FlatpakBackend implements IPackageBackend {
+export class FlatpakBackend implements IPackageBackend<FlatpakPackageType> {
   private readonly userInst: Flatpak.Installation;
   private readonly sysInst: Flatpak.Installation;
   private readonly appstream: AppStreamStore;
@@ -35,8 +35,11 @@ export class FlatpakBackend implements IPackageBackend {
    * AppStream metadata is applied during FlatpakPackage.from().
    */
   listAvailable(): FlatpakPackageType[] {
+    const startedAt = Date.now();
+    log("[Huab] flatpak listAvailable start");
     const installed = this.listInstalled();
     const installedById = new Map(installed.map((p) => [p.id, p]));
+    log(`[Huab] flatpak listInstalled ${installed.length} apps`);
 
     const remoteResults: FlatpakPackageType[] = [];
     const seenRemote = new Set<string>();
@@ -46,15 +49,20 @@ export class FlatpakBackend implements IPackageBackend {
         if (remote.get_disabled()) continue;
         const remoteName = remote.get_name();
         try {
+          const remoteStart = Date.now();
           for (const r of inst.list_remote_refs_sync(remoteName, null)) {
             if (r.get_kind() !== Flatpak.RefKind.APP) continue;
             const pkg = FlatpakPackage.from(r, this.appstream);
-            // TODO: Craate a class to group the same ref from different remotes and installations, instead of just skipping duplicates. 
+            // TODO: Craate a class to group the same ref from different remotes and installations, instead of just skipping duplicates.
             if (!seenRemote.has(pkg.id) && !installedById.has(pkg.id)) {
               seenRemote.add(pkg.id);
               remoteResults.push(pkg);
             }
           }
+          const remoteElapsed = Date.now() - remoteStart;
+          log(
+            `[Huab] flatpak list_remote_refs_sync ${remoteName} ${remoteElapsed}ms (${remoteResults.length} total)`,
+          );
         } catch (e) {
           logError(e as object, `[Huab] list_remote_refs_sync failed for remote "${remoteName}"`);
         }
@@ -64,6 +72,9 @@ export class FlatpakBackend implements IPackageBackend {
     addFromInst(this.userInst);
     addFromInst(this.sysInst);
 
-    return [...installed, ...remoteResults];
+    const result = [...installed, ...remoteResults];
+    const totalElapsed = Date.now() - startedAt;
+    log(`[Huab] flatpak listAvailable total ${totalElapsed}ms`);
+    return result;
   }
 }

@@ -8,6 +8,7 @@ import type { AppStreamPackage } from "../../types.ts";
  */
 export class AppStreamStore {
   private readonly pool: AppStream.Pool;
+  private readonly index = new Map<string, AppStreamPackage>();
 
   constructor() {
     this.pool = new AppStream.Pool();
@@ -20,6 +21,7 @@ export class AppStreamStore {
    * installations, then load the pool. Call once before enrich().
    */
   load(installations: Flatpak.Installation[]): void {
+    const start = Date.now();
     for (const inst of installations) {
       for (const remote of inst.list_remotes(null)) {
         if (remote.get_disabled()) continue;
@@ -39,7 +41,12 @@ export class AppStreamStore {
       this.pool.load(null);
     } catch (e) {
       logError(e as object, "[Huab] AppStreamStore: pool.load() failed");
+    } finally {
+      const elapsed = Date.now() - start;
+      log(`[Huab] appstream pool.load ${elapsed}ms`);
     }
+
+    this.buildIndex();
   }
 
   /**
@@ -47,43 +54,65 @@ export class AppStreamStore {
    * Returns an AppStreamPackage if found, or null if no matching component exists.
    */
   enrich(app_id: string): AppStreamPackage | null {
-    const box = this.pool.get_components_by_id(app_id);
-    const comp = box ? box.as_array().at(0) : undefined;
-    if (!comp) return null;
+    const start = Date.now();
+    const cached = this.index.get(app_id);
+    if (!cached) {
+      const elapsed = Date.now() - start;
+      if (elapsed >= 5) {
+        log(`[Huab] appstream enrich ${app_id} ${elapsed}ms (miss)`);
+      }
+      return null;
+    }
+    const elapsed = Date.now() - start;
+    if (elapsed >= 5) {
+      log(`[Huab] appstream enrich ${app_id} ${elapsed}ms`);
+    }
+    return cached;
+  }
 
-    const dev = comp.get_developer();
+  private buildIndex(): void {
+    this.index.clear();
+    const components = this.pool.get_components();
+    const array = components ? components.as_array() : [];
+    for (const comp of array) {
+      const appId = comp.get_id();
+      if (!appId) continue;
 
-    // Icon: prefer CACHED, fall back to STOCK name
-    const icons = comp.get_icons();
-    const cached = icons.find((i: AppStream.Icon) => i.get_kind() === AppStream.IconKind.CACHED);
-    const stock = icons.find((i: AppStream.Icon) => i.get_kind() === AppStream.IconKind.STOCK);
+      const dev = comp.get_developer();
 
-    // Screenshots: SOURCE images across all screenshots
-    const screenshots = comp
-      .get_screenshots_all()
-      .flatMap((s: AppStream.Screenshot) => s.get_images_all())
-      .filter((i: AppStream.Image) => i.get_kind() === AppStream.ImageKind.SOURCE)
-      .map((i: AppStream.Image) => i.get_url())
-      .filter((u: string): u is string => Boolean(u));
+      // Icon: prefer CACHED, fall back to STOCK name
+      const icons = comp.get_icons();
+      const cached = icons.find((i: AppStream.Icon) => i.get_kind() === AppStream.IconKind.CACHED);
+      const stock = icons.find((i: AppStream.Icon) => i.get_kind() === AppStream.IconKind.STOCK);
 
-    // Launchable: first DESKTOP_ID entry
-    const launchable = comp.get_launchable(AppStream.LaunchableKind.DESKTOP_ID);
+      // Screenshots: SOURCE images across all screenshots
+      const screenshots = comp
+        .get_screenshots_all()
+        .flatMap((s: AppStream.Screenshot) => s.get_images_all())
+        .filter((i: AppStream.Image) => i.get_kind() === AppStream.ImageKind.SOURCE)
+        .map((i: AppStream.Image) => i.get_url())
+        .filter((u: string): u is string => Boolean(u));
 
-    return {
-      summary: comp.get_summary() ?? null,
-      description: comp.get_description() ?? null,
-      url: comp.get_url(AppStream.UrlKind.HOMEPAGE) ?? null,
-      app_name: comp.get_name() ?? null,
-      app_id,
-      launchable: launchable?.get_entries()?.at(0) ?? null,
-      icon: cached?.get_filename() ?? stock?.get_name() ?? null,
-      screenshots,
-      license: comp.get_project_license() ?? null,
-      keywords: comp.get_keywords() ?? [],
-      categories: comp.get_categories() ?? [],
-      developer: dev?.get_name() ?? null,
-      donation_url: comp.get_url(AppStream.UrlKind.DONATION) ?? null,
-      is_floss: comp.is_floss(),
-    };
+      // Launchable: first DESKTOP_ID entry
+      const launchable = comp.get_launchable(AppStream.LaunchableKind.DESKTOP_ID);
+
+      this.index.set(appId, {
+        summary: comp.get_summary() ?? null,
+        description: comp.get_description() ?? null,
+        url: comp.get_url(AppStream.UrlKind.HOMEPAGE) ?? null,
+        app_name: comp.get_name() ?? null,
+        app_id: appId,
+        launchable: launchable?.get_entries()?.at(0) ?? null,
+        icon: cached?.get_filename() ?? stock?.get_name() ?? null,
+        screenshots,
+        license: comp.get_project_license() ?? null,
+        keywords: comp.get_keywords() ?? [],
+        categories: comp.get_categories() ?? [],
+        developer: dev?.get_name() ?? null,
+        donation_url: comp.get_url(AppStream.UrlKind.DONATION) ?? null,
+        is_floss: comp.is_floss(),
+      });
+    }
+    log(`[Huab] appstream index built: ${this.index.size} components`);
   }
 }
