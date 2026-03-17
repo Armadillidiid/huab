@@ -2,10 +2,10 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 
 declare const __VERSION__: string;
-declare const __NAME__: string;
 
-export const VERSION: string = typeof __VERSION__ !== "undefined" ? __VERSION__ : "0.0.0-dev";
-export const NAME: string = typeof __NAME__ !== "undefined" ? __NAME__ : "unknown";
+export const VERSION =
+  typeof __VERSION__ !== "undefined" ? __VERSION__ : "0.0.0";
+export const NAME = "huab";
 
 export const CONFIG_DIRECTORY = `~/.config/${NAME}`;
 export const CONFIG_FILENAME = `${NAME}.json`;

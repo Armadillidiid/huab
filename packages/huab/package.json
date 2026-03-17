@@ -10,7 +10,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "bun run src/bin.ts --watch",
+    "dev": "OTUI_DUMP_CAPTURES=true bun run src/bin.ts --watch",
     "gen:openapi": "bun run --elide-lines=0 ./scripts/gen-openapi.ts",
     "build": "bun run ./scripts/build-binaries.ts",
     "build:single": "bun run ./scripts/build-binaries.ts --single --skip-install",
