@@ -15,11 +15,13 @@ import { HelpView } from "./views/help-view.tsx";
 type PackageBackendKey = (typeof KNOWN_BACKENDS)[number];
 
 function App() {
-  const sdk = useSDK();
+  const { client: sdk } = useSDK();
   const [packages, setPackages] = useState<FlatpakPackage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeBackend, setActiveBackend] = useState<PackageBackendKey>(BACKENDS.flatpak);
+  const [activeBackend, setActiveBackend] = useState<PackageBackendKey>(
+    BACKENDS.flatpak,
+  );
   const [showHelp, setShowHelp] = useState(false);
 
   // Fetch Flatpak packages on mount
@@ -64,7 +66,10 @@ function App() {
       setShowHelp((v) => !v);
       return;
     }
-    if (key.name === "r") {
+
+    // FIX: Reloading breaks app.
+    // TODO: Add shortcut to help page.
+    if (key.ctrl && key.name === "r") {
       setLoading(true);
       sdk
         .refreshFlatpakPackages()
