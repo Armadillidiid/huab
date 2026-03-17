@@ -8,6 +8,7 @@
     "/flatpak/packages": {
       "get": {
         "operationId": "flatpak.listAvailable",
+        "summary": "List all Flatpak packages (installed + available)",
         "responses": {
           "200": {
             "description": "OK",
@@ -275,6 +276,7 @@
     "/flatpak/packages/refresh": {
       "post": {
         "operationId": "flatpak.refresh",
+        "summary": "Force refresh the Flatpak package cache, forcing a reload.",
         "responses": {
           "200": {
             "description": "OK",
@@ -298,6 +300,7 @@
     "/packages": {
       "get": {
         "operationId": "listAllAvailable",
+        "summary": "List all packages across all backends",
         "responses": {
           "200": {
             "description": "OK",

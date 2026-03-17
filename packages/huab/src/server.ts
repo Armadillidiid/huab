@@ -9,9 +9,7 @@ import { subscribeEvent } from "./events/event-bus.ts";
 const client = new HuabClient();
 
 async function loadFlatpakPackages(): Promise<FlatpakPackage[]> {
-  const packages = (await client.listAvailable(
-    BACKENDS.flatpak,
-  )) as FlatpakPackage[];
+  const packages = await client.listAvailable(BACKENDS.flatpak);
   return packages;
 }
 

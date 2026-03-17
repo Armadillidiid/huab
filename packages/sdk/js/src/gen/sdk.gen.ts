@@ -55,6 +55,9 @@ class HeyApiRegistry<T> {
 }
 
 export class Flatpak extends HeyApiClient {
+  /**
+   * List all Flatpak packages (installed + available)
+   */
   public listAvailable<ThrowOnError extends boolean = false>(
     options?: Options<FlatpakListAvailableData, ThrowOnError>,
   ) {
@@ -65,6 +68,9 @@ export class Flatpak extends HeyApiClient {
     >({ url: "/flatpak/packages", ...options });
   }
 
+  /**
+   * Force refresh the Flatpak package cache, forcing a reload.
+   */
   public refresh<ThrowOnError extends boolean = false>(
     options?: Options<FlatpakRefreshData, ThrowOnError>,
   ) {
@@ -83,6 +89,9 @@ export class HuabSdk extends HeyApiClient {
     HuabSdk.__registry.set(this, args?.key);
   }
 
+  /**
+   * List all packages across all backends
+   */
   public listAllAvailable<ThrowOnError extends boolean = false>(
     options?: Options<ListAllAvailableData, ThrowOnError>,
   ) {
