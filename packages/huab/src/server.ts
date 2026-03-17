@@ -16,7 +16,6 @@ async function loadFlatpakPackages(): Promise<FlatpakPackage[]> {
 }
 
 export const server = new H3()
-  // GET /flatpak/packages — list all Flatpak packages (installed + available)
   .get("/flatpak/packages", async () => {
     const result = await getFlatpakPackagesCached(loadFlatpakPackages);
     return result.packages;
