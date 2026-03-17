@@ -11,14 +11,17 @@ function resolveRequestUrl(input: RequestInfo | URL): URL {
 }
 
 export function createCustomFetch(app: H3): typeof fetch {
-  const customFetch = async (
-    input: RequestInfo | URL,
-    init?: RequestInit,
-  ): Promise<Response> => {
-    const url = resolveRequestUrl(input);
-    const request = new Request(url.toString(), init);
-    const response = await app.request(request);
-    return response;
+  const customFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    let request: Request;
+
+    if (input instanceof Request) {
+      request = init ? new Request(input, init) : input;
+    } else {
+      const url = resolveRequestUrl(input);
+      request = new Request(url.toString(), init);
+    }
+
+    return app.request(request);
   };
 
   return customFetch as typeof fetch;
