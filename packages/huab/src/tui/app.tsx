@@ -1,6 +1,6 @@
 import { createCliRenderer } from "@opentui/core";
 import { createRoot, useKeyboard } from "@opentui/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BACKENDS, KNOWN_BACKENDS } from "@huab/lib";
 import type { FlatpakPackage } from "@huab/lib";
 import { Header } from "./component/header.tsx";
@@ -15,7 +15,7 @@ import { HelpView } from "./views/help-view.tsx";
 type PackageBackendKey = (typeof KNOWN_BACKENDS)[number];
 
 function App() {
-  const { client: sdk } = useSDK();
+  const { client: sdk, event } = useSDK();
   const [packages, setPackages] = useState<FlatpakPackage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,35 +24,60 @@ function App() {
   );
   const [showHelp, setShowHelp] = useState(false);
 
+  const formatError = useCallback((err: unknown): string => {
+    if (err instanceof Error) return err.message;
+    if (typeof err === "string") return err;
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  }, []);
+
   // Fetch Flatpak packages on mount
   useEffect(() => {
+    let active = true;
     sdk.flatpak
-      .listAvailable()
-      .then((pkgs) => {
-        setPackages(pkgs);
+      .listAvailable({
+        responseStyle: "fields",
+        throwOnError: true,
+      })
+      .then((result) => {
+        if (!active) return;
+        setPackages(result.data as FlatpakPackage[]);
+        setError(null);
       })
       .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : String(err));
+        if (!active) return;
+        setError(formatError(err));
       })
       .finally(() => {
+        if (!active) return;
         setLoading(false);
       });
-  }, [sdk]);
+
+    return () => {
+      active = false;
+    };
+  }, [formatError, sdk]);
 
   useEffect(() => {
-    return sdk.subscribe((event) => {
-      if (event.type !== "cache.updated") return;
-      sdk
-        .listFlatpakPackages()
-        .then((pkgs) => {
-          setPackages(pkgs);
+    return event.subscribeEvent((evt) => {
+      if (evt.type !== "cache.updated") return;
+      sdk.flatpak
+        .listAvailable({
+          responseStyle: "fields",
+          throwOnError: true,
+        })
+        .then((result) => {
+          setPackages(result.data as FlatpakPackage[]);
           setError(null);
         })
         .catch((err: unknown) => {
-          setError(err instanceof Error ? err.message : String(err));
+          setError(formatError(err));
         });
     });
-  }, [sdk]);
+  }, [event, formatError, sdk]);
 
   // Global shortcuts: number keys switch backend tabs, ? toggles help
   useKeyboard((key) => {
@@ -67,14 +92,16 @@ function App() {
       return;
     }
 
-    // FIX: Reloading breaks app.
-    // TODO: Add shortcut to help page.
     if (key.ctrl && key.name === "r") {
       setLoading(true);
-      sdk
-        .refreshFlatpakPackages()
+      setError(null);
+      sdk.flatpak
+        .refresh({
+          responseStyle: "data",
+          throwOnError: true,
+        })
         .catch((err: unknown) => {
-          setError(err instanceof Error ? err.message : String(err));
+          setError(formatError(err));
         })
         .finally(() => {
           setLoading(false);
@@ -121,6 +148,13 @@ function App() {
 }
 
 const renderer = await createCliRenderer({ exitOnCtrlC: true });
+renderer.keyInput.on("keypress", (key) => {
+  // Toggle with backtick key for development/debugging purposes
+  if (key.name === "`") {
+    renderer.console.toggle();
+  }
+});
+
 createRoot(renderer).render(
   <SDKProvider>
     <App />
