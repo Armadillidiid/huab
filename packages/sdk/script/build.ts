@@ -19,23 +19,15 @@ await createClient({
     clean: true,
   },
   plugins: [
-    {
-      name: "@hey-api/typescript",
-      exportFromIndex: false,
-    },
+    { name: "@hey-api/typescript" },
     {
       name: "@hey-api/sdk",
-      instance: "HuabClient",
-      exportFromIndex: false,
       auth: false,
       operations: {
-        strategy: "flat",
+        strategy: "single",
+        containerName: "HuabSdk",
+        methods: "instance",
       },
-    },
-    {
-      name: "@hey-api/client-fetch",
-      exportFromIndex: false,
-      baseUrl: "http://localhost:4096",
     },
   ],
 });

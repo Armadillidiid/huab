@@ -16,651 +16,278 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "properties": {
-                          "id": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "string"
+                      },
+                      "backend": {
+                        "const": "flatpak"
+                      },
+                      "summary": {
+                        "anyOf": [
+                          {
                             "type": "string"
                           },
-                          "name": {
-                            "type": "string"
-                          },
-                          "version": {
-                            "type": "string"
-                          },
-                          "backend": {
-                            "const": "flatpak"
-                          },
-                          "summary": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "description": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "url": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "app_name": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "app_id": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "launchable": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "icon": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "screenshots": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "license": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "keywords": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "categories": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "developer": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "donation_url": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "is_floss": {
-                            "type": "boolean"
-                          },
-                          "installed_version": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "repo": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "installed_size": {
-                            "type": "number"
-                          },
-                          "download_size": {
-                            "type": "number"
-                          },
-                          "install_date": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "arch": {
-                            "type": "string"
-                          },
-                          "branch": {
-                            "type": "string"
-                          },
-                          "ref": {
-                            "type": "string"
-                          },
-                          "runtime": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "command": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "eol": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "kind": {
-                            "type": "integer",
-                            "minimum": -9007199254740991,
-                            "maximum": 9007199254740991
+                          {
+                            "type": "null"
                           }
-                        },
-                        "required": [
-                          "id",
-                          "name",
-                          "version",
-                          "backend",
-                          "summary",
-                          "description",
-                          "url",
-                          "app_name",
-                          "app_id",
-                          "launchable",
-                          "icon",
-                          "screenshots",
-                          "license",
-                          "keywords",
-                          "categories",
-                          "developer",
-                          "donation_url",
-                          "is_floss",
-                          "installed_version",
-                          "repo",
-                          "installed_size",
-                          "download_size",
-                          "install_date",
-                          "arch",
-                          "branch",
-                          "ref",
-                          "runtime",
-                          "command",
-                          "eol",
-                          "kind"
                         ]
                       },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "id": {
+                      "description": {
+                        "anyOf": [
+                          {
                             "type": "string"
                           },
-                          "name": {
-                            "type": "string"
-                          },
-                          "version": {
-                            "type": "string"
-                          },
-                          "backend": {
-                            "const": "alpm"
-                          },
-                          "build_date": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "packager": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "reason": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "groups": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "depends": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "optdepends": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "makedepends": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "checkdepends": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "requiredby": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "optionalfor": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "provides": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "replaces": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "conflicts": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "validations": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                          {
+                            "type": "null"
                           }
-                        },
-                        "required": [
-                          "id",
-                          "name",
-                          "version",
-                          "backend",
-                          "build_date",
-                          "packager",
-                          "reason",
-                          "groups",
-                          "depends",
-                          "optdepends",
-                          "makedepends",
-                          "checkdepends",
-                          "requiredby",
-                          "optionalfor",
-                          "provides",
-                          "replaces",
-                          "conflicts",
-                          "validations"
                         ]
                       },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "id": {
+                      "url": {
+                        "anyOf": [
+                          {
                             "type": "string"
                           },
-                          "name": {
-                            "type": "string"
-                          },
-                          "version": {
-                            "type": "string"
-                          },
-                          "build_date": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "packager": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "reason": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "groups": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "depends": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "optdepends": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "makedepends": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "checkdepends": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "requiredby": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "optionalfor": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "provides": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "replaces": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "conflicts": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "validations": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "backend": {
-                            "const": "aur"
-                          },
-                          "packagebase": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "maintainer": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "popularity": {
-                            "type": "number"
-                          },
-                          "lastmodified": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "outofdate": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "firstsubmitted": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "numvotes": {
-                            "type": "number"
+                          {
+                            "type": "null"
                           }
-                        },
-                        "required": [
-                          "id",
-                          "name",
-                          "version",
-                          "build_date",
-                          "packager",
-                          "reason",
-                          "groups",
-                          "depends",
-                          "optdepends",
-                          "makedepends",
-                          "checkdepends",
-                          "requiredby",
-                          "optionalfor",
-                          "provides",
-                          "replaces",
-                          "conflicts",
-                          "validations",
-                          "backend",
-                          "packagebase",
-                          "maintainer",
-                          "popularity",
-                          "lastmodified",
-                          "outofdate",
-                          "firstsubmitted",
-                          "numvotes"
                         ]
                       },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "id": {
+                      "app_name": {
+                        "anyOf": [
+                          {
                             "type": "string"
                           },
-                          "name": {
-                            "type": "string"
-                          },
-                          "version": {
-                            "type": "string"
-                          },
-                          "backend": {
-                            "const": "snap"
-                          },
-                          "channel": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "publisher": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "confined": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "channels": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                          {
+                            "type": "null"
                           }
-                        },
-                        "required": [
-                          "id",
-                          "name",
-                          "version",
-                          "backend",
-                          "channel",
-                          "publisher",
-                          "confined",
-                          "channels"
                         ]
+                      },
+                      "app_id": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "launchable": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "icon": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "screenshots": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "license": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "keywords": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "categories": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "developer": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "donation_url": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "is_floss": {
+                        "type": "boolean"
+                      },
+                      "installed_version": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "repo": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "installed_size": {
+                        "type": "number"
+                      },
+                      "download_size": {
+                        "type": "number"
+                      },
+                      "install_date": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "arch": {
+                        "type": "string"
+                      },
+                      "branch": {
+                        "type": "string"
+                      },
+                      "ref": {
+                        "type": "string"
+                      },
+                      "runtime": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "command": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "eol": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "kind": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
                       }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "version",
+                      "backend",
+                      "summary",
+                      "description",
+                      "url",
+                      "app_name",
+                      "app_id",
+                      "launchable",
+                      "icon",
+                      "screenshots",
+                      "license",
+                      "keywords",
+                      "categories",
+                      "developer",
+                      "donation_url",
+                      "is_floss",
+                      "installed_version",
+                      "repo",
+                      "installed_size",
+                      "download_size",
+                      "install_date",
+                      "arch",
+                      "branch",
+                      "ref",
+                      "runtime",
+                      "command",
+                      "eol",
+                      "kind"
                     ]
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/flatpak/packages/refresh": {
+      "post": {
+        "operationId": "flatpak.refresh",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "const": true
+                    }
+                  },
+                  "required": ["ok"]
                 }
               }
             }

@@ -3,9 +3,8 @@
   "name": "@huab/sdk",
   "type": "module",
   "exports": {
-    ".": "./js/src/gen/client/index.ts",
-    "./client": "./js/src/gen/client.gen.ts",
-    "./sdk": "./js/src/gen/sdk.gen.ts"
+    ".": "./js/src/gen/index.ts",
+    "./client": "./js/src/gen/client/index.ts"
   },
   "scripts": {
     "typecheck": "tsgo --noEmit",

@@ -5,6 +5,8 @@ import type { Client, Options as Options2, TDataShape } from "./client/index.js"
 import type {
   FlatpakListAvailableData,
   FlatpakListAvailableResponses,
+  FlatpakRefreshData,
+  FlatpakRefreshResponses,
   ListAllAvailableData,
   ListAllAvailableResponses,
 } from "./types.gen.js";
@@ -26,18 +28,72 @@ export type Options<
   meta?: Record<string, unknown>;
 };
 
-export const flatpakListAvailable = <ThrowOnError extends boolean = false>(
-  options?: Options<FlatpakListAvailableData, ThrowOnError>,
-) =>
-  (options?.client ?? client).get<FlatpakListAvailableResponses, unknown, ThrowOnError>({
-    url: "/flatpak/packages",
-    ...options,
-  });
+class HeyApiClient {
+  protected client: Client;
 
-export const listAllAvailable = <ThrowOnError extends boolean = false>(
-  options?: Options<ListAllAvailableData, ThrowOnError>,
-) =>
-  (options?.client ?? client).get<ListAllAvailableResponses, unknown, ThrowOnError>({
-    url: "/packages",
-    ...options,
-  });
+  constructor(args?: { client?: Client }) {
+    this.client = args?.client ?? client;
+  }
+}
+
+class HeyApiRegistry<T> {
+  private readonly defaultKey = "default";
+
+  private readonly instances: Map<string, T> = new Map();
+
+  get(key?: string): T {
+    const instance = this.instances.get(key ?? this.defaultKey);
+    if (!instance) {
+      throw new Error(`No SDK client found. Create one with "new HuabSdk()" to fix this error.`);
+    }
+    return instance;
+  }
+
+  set(value: T, key?: string): void {
+    this.instances.set(key ?? this.defaultKey, value);
+  }
+}
+
+export class Flatpak extends HeyApiClient {
+  public listAvailable<ThrowOnError extends boolean = false>(
+    options?: Options<FlatpakListAvailableData, ThrowOnError>,
+  ) {
+    return (options?.client ?? this.client).get<
+      FlatpakListAvailableResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/flatpak/packages", ...options });
+  }
+
+  public refresh<ThrowOnError extends boolean = false>(
+    options?: Options<FlatpakRefreshData, ThrowOnError>,
+  ) {
+    return (options?.client ?? this.client).post<FlatpakRefreshResponses, unknown, ThrowOnError>({
+      url: "/flatpak/packages/refresh",
+      ...options,
+    });
+  }
+}
+
+export class HuabSdk extends HeyApiClient {
+  public static readonly __registry = new HeyApiRegistry<HuabSdk>();
+
+  constructor(args?: { client?: Client; key?: string }) {
+    super(args);
+    HuabSdk.__registry.set(this, args?.key);
+  }
+
+  public listAllAvailable<ThrowOnError extends boolean = false>(
+    options?: Options<ListAllAvailableData, ThrowOnError>,
+  ) {
+    return (options?.client ?? this.client).get<ListAllAvailableResponses, unknown, ThrowOnError>({
+      url: "/packages",
+      ...options,
+    });
+  }
+
+  private _flatpak?: Flatpak;
+  get flatpak(): Flatpak {
+    return (this._flatpak ??= new Flatpak({ client: this.client }));
+  }
+}

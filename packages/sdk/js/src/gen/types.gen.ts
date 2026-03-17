@@ -15,101 +15,60 @@ export type FlatpakListAvailableResponses = {
   /**
    * OK
    */
-  200: Array<
-    | {
-        id: string;
-        name: string;
-        version: string;
-        backend: "flatpak";
-        summary: string | null;
-        description: string | null;
-        url: string | null;
-        app_name: string | null;
-        app_id: string | null;
-        launchable: string | null;
-        icon: string | null;
-        screenshots: Array<string>;
-        license: string | null;
-        keywords: Array<string>;
-        categories: Array<string>;
-        developer: string | null;
-        donation_url: string | null;
-        is_floss: boolean;
-        installed_version: string | null;
-        repo: string | null;
-        installed_size: number;
-        download_size: number;
-        install_date: string | null;
-        arch: string;
-        branch: string;
-        ref: string;
-        runtime: string | null;
-        command: string | null;
-        eol: string | null;
-        kind: number;
-      }
-    | {
-        id: string;
-        name: string;
-        version: string;
-        backend: "alpm";
-        build_date: string | null;
-        packager: string | null;
-        reason: string | null;
-        groups: Array<string>;
-        depends: Array<string>;
-        optdepends: Array<string>;
-        makedepends: Array<string>;
-        checkdepends: Array<string>;
-        requiredby: Array<string>;
-        optionalfor: Array<string>;
-        provides: Array<string>;
-        replaces: Array<string>;
-        conflicts: Array<string>;
-        validations: Array<string>;
-      }
-    | {
-        id: string;
-        name: string;
-        version: string;
-        build_date: string | null;
-        packager: string | null;
-        reason: string | null;
-        groups: Array<string>;
-        depends: Array<string>;
-        optdepends: Array<string>;
-        makedepends: Array<string>;
-        checkdepends: Array<string>;
-        requiredby: Array<string>;
-        optionalfor: Array<string>;
-        provides: Array<string>;
-        replaces: Array<string>;
-        conflicts: Array<string>;
-        validations: Array<string>;
-        backend: "aur";
-        packagebase: string | null;
-        maintainer: string | null;
-        popularity: number;
-        lastmodified: string | null;
-        outofdate: string | null;
-        firstsubmitted: string | null;
-        numvotes: number;
-      }
-    | {
-        id: string;
-        name: string;
-        version: string;
-        backend: "snap";
-        channel: string | null;
-        publisher: string | null;
-        confined: string | null;
-        channels: Array<string>;
-      }
-  >;
+  200: Array<{
+    id: string;
+    name: string;
+    version: string;
+    backend: "flatpak";
+    summary: string | null;
+    description: string | null;
+    url: string | null;
+    app_name: string | null;
+    app_id: string | null;
+    launchable: string | null;
+    icon: string | null;
+    screenshots: Array<string>;
+    license: string | null;
+    keywords: Array<string>;
+    categories: Array<string>;
+    developer: string | null;
+    donation_url: string | null;
+    is_floss: boolean;
+    installed_version: string | null;
+    repo: string | null;
+    installed_size: number;
+    download_size: number;
+    install_date: string | null;
+    arch: string;
+    branch: string;
+    ref: string;
+    runtime: string | null;
+    command: string | null;
+    eol: string | null;
+    kind: number;
+  }>;
 };
 
 export type FlatpakListAvailableResponse =
   FlatpakListAvailableResponses[keyof FlatpakListAvailableResponses];
+
+export type FlatpakRefreshData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/flatpak/packages/refresh";
+};
+
+export type FlatpakRefreshResponses = {
+  /**
+   * OK
+   */
+  200: {
+    ok: true;
+  };
+};
+
+export type FlatpakRefreshResponse = FlatpakRefreshResponses[keyof FlatpakRefreshResponses];
 
 export type ListAllAvailableData = {
   body?: never;
