@@ -1,7 +1,7 @@
 import { createCliRenderer } from "@opentui/core";
 import { createRoot, useKeyboard } from "@opentui/react";
 import { useEffect, useState } from "react";
-import { HuabClient, BACKENDS, KNOWN_BACKENDS } from "@huab/lib";
+import { BACKENDS, KNOWN_BACKENDS } from "@huab/lib";
 import type { FlatpakPackage } from "@huab/lib";
 import { Header } from "./component/header.tsx";
 import { BackendTabs } from "./component/backend-tabs.tsx";
@@ -9,11 +9,13 @@ import { StatusBar } from "./component/status-bar.tsx";
 import { FlatpakView } from "./views/flatpak-view.tsx";
 import { ComingSoonView } from "./component/coming-soon-view.tsx";
 import { KeyboardProvider } from "./context/keyboard.tsx";
+import { SDKProvider, useSDK } from "./context/sdk.tsx";
 import { HelpView } from "./views/help-view.tsx";
 
 type PackageBackendKey = (typeof KNOWN_BACKENDS)[number];
 
 function App() {
+  const sdk = useSDK();
   const [packages, setPackages] = useState<FlatpakPackage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,20 +24,33 @@ function App() {
 
   // Fetch Flatpak packages on mount
   useEffect(() => {
-    const client = new HuabClient();
-    client
-      .listAvailable(BACKENDS.flatpak)
+    sdk
+      .listFlatpakPackages()
       .then((pkgs) => {
-        setPackages(pkgs.filter((p) => p.backend === BACKENDS.flatpak));
+        setPackages(pkgs);
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : String(err));
       })
       .finally(() => {
         setLoading(false);
-        client.disconnect();
       });
-  }, []);
+  }, [sdk]);
+
+  useEffect(() => {
+    return sdk.subscribe((event) => {
+      if (event.type !== "cache.updated") return;
+      sdk
+        .listFlatpakPackages()
+        .then((pkgs) => {
+          setPackages(pkgs);
+          setError(null);
+        })
+        .catch((err: unknown) => {
+          setError(err instanceof Error ? err.message : String(err));
+        });
+    });
+  }, [sdk]);
 
   // Global shortcuts: number keys switch backend tabs, ? toggles help
   useKeyboard((key) => {
@@ -47,6 +62,18 @@ function App() {
     }
     if (key.name === "?") {
       setShowHelp((v) => !v);
+      return;
+    }
+    if (key.name === "r") {
+      setLoading(true);
+      sdk
+        .refreshFlatpakPackages()
+        .catch((err: unknown) => {
+          setError(err instanceof Error ? err.message : String(err));
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   });
   const backendsArray: PackageBackendKey[] = [...KNOWN_BACKENDS];
@@ -89,4 +116,8 @@ function App() {
 }
 
 const renderer = await createCliRenderer({ exitOnCtrlC: true });
-createRoot(renderer).render(<App />);
+createRoot(renderer).render(
+  <SDKProvider>
+    <App />
+  </SDKProvider>,
+);
