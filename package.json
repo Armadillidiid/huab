@@ -7,10 +7,9 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:cli": "bun run --cwd packages/huab src/bin.ts",
-    "huab": "bun --filter huab",
-    "huab:cwd": "bun run --cwd packages/huab",
-    "sdk": "bun --filter @huab/sdk",
+    "dev:tui": "bun run --cwd packages/huab dev",
+    "dev:dbus": "bun run --cwd packages/lib dev",
+    "build:sdk": "bun --filter @huab/sdk build",
     "lint": "bun --workspaces lint",
     "lint:fix": "bun --workspaces lint:fix",
     "format": "bun --workspaces format",
@@ -33,6 +32,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "license": "ISC"
 }
