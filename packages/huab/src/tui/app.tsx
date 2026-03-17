@@ -26,8 +26,8 @@ function App() {
 
   // Fetch Flatpak packages on mount
   useEffect(() => {
-    sdk
-      .listFlatpakPackages()
+    sdk.flatpak
+      .listAvailable()
       .then((pkgs) => {
         setPackages(pkgs);
       })

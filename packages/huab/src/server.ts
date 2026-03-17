@@ -11,7 +11,7 @@ const client = new HuabClient();
 async function loadFlatpakPackages(): Promise<FlatpakPackage[]> {
   const packages = (await client.listAvailable(
     BACKENDS.flatpak,
-  )) as FlatpakPackage;
+  )) as FlatpakPackage[];
   return packages;
 }
 

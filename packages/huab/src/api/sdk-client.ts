@@ -1,5 +1,6 @@
 import type { H3 } from "h3";
-import { createClient, type Client } from "@huab/sdk";
+import { createClient, createConfig } from "@huab/sdk/client";
+import { HuabSdk } from "@huab/sdk";
 
 const BASE_URL = "http://local.huab";
 
@@ -10,7 +11,10 @@ function resolveRequestUrl(input: RequestInfo | URL): URL {
 }
 
 export function createCustomFetch(app: H3): typeof fetch {
-  const customFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+  const customFetch = async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
     const url = resolveRequestUrl(input);
     const request = new Request(url.toString(), init);
     const response = await app.request(request);
@@ -20,9 +24,12 @@ export function createCustomFetch(app: H3): typeof fetch {
   return customFetch as typeof fetch;
 }
 
-export function createInProcessSdkClient(app: H3): Client {
-  return createClient({
-    baseUrl: BASE_URL,
-    fetch: createCustomFetch(app),
-  });
+export function createInProcessSdkClient(app: H3) {
+  const client = createClient(
+    createConfig({
+      baseUrl: BASE_URL,
+      fetch: createCustomFetch(app),
+    }),
+  );
+  return new HuabSdk({ client });
 }
