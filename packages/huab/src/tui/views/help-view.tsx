@@ -28,7 +28,7 @@ export const HelpView = () => {
         </box>
         <box flexDirection="row" gap={2}>
           <text fg="#666666" width={20}>
-            /
+            Ctrl + k 
           </text>
           <text fg="#c0caf5">Focus search bar</text>
         </box>
@@ -55,6 +55,12 @@ export const HelpView = () => {
             escape
           </text>
           <text fg="#c0caf5">Return to list / clear search</text>
+        </box>
+        <box flexDirection="row" gap={2}>
+          <text fg="#666666" width={20}>
+            Ctrl + r
+          </text>
+          <text fg="#c0caf5">Refresh package list</text>
         </box>
         <box flexDirection="row" gap={2}>
           <text fg="#666666" width={20}>
