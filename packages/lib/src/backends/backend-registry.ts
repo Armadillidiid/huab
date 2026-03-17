@@ -1,5 +1,5 @@
 import { KNOWN_BACKENDS } from "../constants.ts";
-import type { PackageBackend, AnyPackage } from "../types.ts";
+import type { AnyPackage, PackageBackend, PackageForBackend } from "../types.ts";
 import type { IPackageBackend } from "./backend.ts";
 
 /**
@@ -15,19 +15,22 @@ export function parseBackend(s: string): PackageBackend {
 export class BackendRegistry {
   private readonly backends = new Map<PackageBackend, IPackageBackend>();
 
-  register(name: PackageBackend, backend: IPackageBackend): void {
+  register<B extends PackageBackend>(
+    name: B,
+    backend: IPackageBackend<PackageForBackend<B>>,
+  ): void {
     this.backends.set(name, backend);
   }
 
-  get(name: PackageBackend): IPackageBackend {
+  get<B extends PackageBackend>(name: B): IPackageBackend<PackageForBackend<B>> {
     const backend = this.backends.get(name);
     if (!backend) {
       throw new Error(`[Huab] No backend registered for "${name}"`);
     }
-    return backend;
+    return backend as IPackageBackend<PackageForBackend<B>>;
   }
 
-  listAvailable(backend: PackageBackend): AnyPackage[] {
+  listAvailable<B extends PackageBackend>(backend: B): PackageForBackend<B>[] {
     return this.get(backend).listAvailable();
   }
 

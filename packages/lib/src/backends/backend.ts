@@ -9,7 +9,7 @@ import type { AnyPackage } from "../types.ts";
  * call with `typeof backend.method === 'function'` so unsupported backends are
  * silently skipped.
  */
-export interface IPackageBackend {
+export interface IPackageBackend<T extends AnyPackage = AnyPackage> {
   /** Returns all packages available from remotes */
-  listAvailable(): AnyPackage[];
+  listAvailable(): T[];
 }

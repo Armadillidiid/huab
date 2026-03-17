@@ -6,10 +6,7 @@ import { KNOWN_BACKENDS } from "./constants.ts";
 // ---------------------------------------------------------------------------
 
 export const PackageBackendSchema = z.enum(
-  KNOWN_BACKENDS as [
-    (typeof KNOWN_BACKENDS)[number],
-    ...(typeof KNOWN_BACKENDS)[number][],
-  ],
+  KNOWN_BACKENDS as [(typeof KNOWN_BACKENDS)[number], ...(typeof KNOWN_BACKENDS)[number][]],
 );
 
 export type PackageBackend = z.infer<typeof PackageBackendSchema>;
@@ -75,9 +72,7 @@ export type AppStreamPackage = z.infer<typeof AppStreamPackageSchema>;
 // ---------------------------------------------------------------------------
 
 // TODO: stuff appstream schema under "appstream" key as not all packages will have it.
-export const FlatpakPackageSchema = PackageSchema.extend(
-  AppStreamPackageSchema.shape,
-).extend({
+export const FlatpakPackageSchema = PackageSchema.extend(AppStreamPackageSchema.shape).extend({
   backend: z.literal("flatpak"),
   /** Currently installed version (null if not installed) */
   installed_version: z.string().nullable(),
@@ -186,6 +181,21 @@ export const AnyPackageSchema = z.discriminatedUnion("backend", [
 ]);
 
 export type AnyPackage = z.infer<typeof AnyPackageSchema>;
+
+// ---------------------------------------------------------------------------
+// Backend-to-package mapping
+// ---------------------------------------------------------------------------
+
+export type PackageByBackend = {
+  flatpak: FlatpakPackage;
+  alpm: AlpmPackage;
+  aur: AURPackage;
+  snap: SnapPackage;
+};
+
+export type PackageForBackend<B extends PackageBackend> = B extends keyof PackageByBackend
+  ? PackageByBackend[B]
+  : AnyPackage;
 
 // ---------------------------------------------------------------------------
 // Utility types

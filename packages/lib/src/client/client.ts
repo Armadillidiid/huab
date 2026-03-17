@@ -1,5 +1,5 @@
 import * as dbus from "dbus-next";
-import type { AnyPackage, PackageBackend, Promisify } from "../types.ts";
+import type { AnyPackage, PackageBackend, PackageForBackend, Promisify } from "../types.ts";
 import { SERVICE_NAME, OBJECT_PATH, IFACE_NAME } from "../constants.ts";
 import type { ManagerIface } from "../dbus/manager-iface.ts";
 
@@ -19,10 +19,10 @@ export class HuabClient {
 
   // Query
 
-  async listAvailable(backend: PackageBackend): Promise<AnyPackage[]> {
+  async listAvailable<B extends PackageBackend>(backend: B): Promise<PackageForBackend<B>[]> {
     const manager = await this.proxy();
     const json = await manager.ListAvailable(backend);
-    return JSON.parse(json) as AnyPackage[];
+    return JSON.parse(json) as PackageForBackend<B>[];
   }
 
   async listAllAvailable(): Promise<AnyPackage[]> {
