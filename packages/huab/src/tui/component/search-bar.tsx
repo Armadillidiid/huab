@@ -9,7 +9,7 @@ export function SearchBar({ value, focused, onInput }: SearchBarProps) {
     <box
       flexDirection="row"
       alignItems="center"
-      gap={1}
+      gap={2}
       paddingX={2}
       height={3}
       border
@@ -17,11 +17,11 @@ export function SearchBar({ value, focused, onInput }: SearchBarProps) {
       borderColor={focused ? "#7aa2f7" : "#2a2a4e"}
       backgroundColor="#1a1a2e"
     >
-      <text fg="#666666">/</text>
+      <text fg="#666666">{value.length > 0 ? "" : ""}</text>
       <input
         value={value}
         onInput={onInput}
-        placeholder="Search packages…"
+        placeholder="Search packages… (Ctrl+k)"
         focused={focused}
         flexGrow={1}
         backgroundColor="transparent"
